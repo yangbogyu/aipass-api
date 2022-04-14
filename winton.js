@@ -6,7 +6,13 @@ const { combine, timestamp, printf, colorize } = winston.format;
 const logDir = 'logs';  // logs 디렉토리 하위에 로그 파일 저장
 
 const logFormat = printf(info => {
-    return `${info.timestamp} ${info.level}: ${info.message}`;
+    if(info.message.length-1 >= 1){
+        const message = info.message.substring(0,info.message.length-1);
+        return `${info.timestamp} ${info.level}: ${message}`;
+    } else{
+        return `${info.timestamp} ${info.level}: ${info.message}`;
+    }
+    
 });
 /*
  * Log Level
@@ -60,7 +66,7 @@ logger.stream = {// morgan wiston 설정
 if (process.env.NODE_ENV !== 'production') {
     logger.add(new winston.transports.Console({
         format: combine(
-            colorize({ all: true }), // console 에 출력할 로그 컬러 설정 적용함
+            colorize({ all: false }), // console 에 출력할 로그 컬러 설정 적용함
             logFormat // log format 적용
         )
     }));

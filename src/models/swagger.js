@@ -10,7 +10,7 @@ const options = {
             description: 'AiPass API with express',
         }, host: 'api.bogyu98.shop', 
         basePath: '/' 
-    }, apis: ['./src/routes/*.js', './src/models/*'] 
+    }, apis: ['./src/routes/*.js', './src/routes/user/*.js',  './src/models/*.js', './src/*.js'] 
 };
 
 const specs = swaggereJsdoc(options);
