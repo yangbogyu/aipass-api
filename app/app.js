@@ -10,7 +10,7 @@ console.log(process.env.DB_HOST);
 
 //log
 const morgan = require('morgan');
-const logger = require('./winton');
+const {logger, stream} = require('./winton');
 const combined = ':remote-addr - :remote-user ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"' 
 // 기존 combined 포멧에서 timestamp만 제거
 const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : combined; // NOTE: morgan 출력 형태 server.env에서 NODE_ENV 설정 production : 배포 dev : 개발
@@ -23,8 +23,9 @@ const app = express();
 app.set('views', path.join(__dirname, 'src/views'));
 app.set('view engine', 'jade');
 
+app.use(morgan('HTTP/:http-version :method :remote-addr :url :remote-user :status :res[content-length] :referrer :user-agent :response-time ms', { stream }));
 //log
-app.use(morgan(morganFormat, {stream : logger.stream}));
+//app.use(morgan(morganFormat, {stream : logger.stream}));
 
 //set
 app.use(express.json());
@@ -40,7 +41,7 @@ app.use('/user', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  logger.error('err');
+  logger.error('err ');
   next(createError(404));
 });
 

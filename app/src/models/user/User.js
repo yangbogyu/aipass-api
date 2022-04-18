@@ -54,9 +54,9 @@ class User{
                             token : token,
                             response : data};
                 } 
-                return {success : false, msg:"비밀번호가 틀렸습니다."};
+                return {success : false, err:"비밀번호가 틀렸습니다."};
             }
-            return {success : false, msg:"아이디가 없습니다."};
+            return {success : false, err:"아이디가 없습니다."};
         } catch(err){
             return {success : false, err:`${err}`};
         }

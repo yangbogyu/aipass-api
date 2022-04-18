@@ -66,7 +66,7 @@ logger.stream = {// morgan wiston 설정
 if (process.env.NODE_ENV !== 'production') {
     logger.add(new winston.transports.Console({
         format: combine(
-            colorize({ all: false }), // console 에 출력할 로그 컬러 설정 적용함
+            colorize({ all: true }), // console 에 출력할 로그 컬러 설정 적용함
             logFormat // log format 적용
         )
     }));
