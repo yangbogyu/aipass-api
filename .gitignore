@@ -104,4 +104,5 @@ dist
 .tern-port
 
 # api 문서
+doc
 *doc/
