@@ -1,7 +1,6 @@
 "use strict";
 const User = require("../../models/user/User");
 
-const jwt = require("../../models/jwt");
 const logger = require("../../../winton");
 
 const output = {
@@ -20,13 +19,6 @@ const process = {
     login: async(req, res) =>{
         const user = new User(req.body);
         const response = await user.login();
-        if(response.success){
-            res.cookie('access_token', response.token,{
-                maxAge: 1000 * 60 * 60 * 24 * 365, //365일
-                httpOnly: true,
-            });
-            delete response.token;
-        }
         const url = {
             method: "POST",
             path: "/login",
@@ -39,16 +31,21 @@ const process = {
         const user = new User(req.body);
         const response = await user.register();
         
-        if(response.success){
-            res.cookie('access_token', response.token,{
-                maxAge: 1000 * 60 * 60 * 24 * 365, //365일
-                httpOnly: true,
-            });
-            delete response.token;
-        }
         const url = {
             method: "POST",
             path: "/register",
+            status: response.err ? 400 : 201,
+        };
+        return res.status(url.status).json(response);
+    },
+
+    update: async(req, res) => {
+        const user = new User(req.body);
+        const response = await user.update();
+        
+        const url = {
+            method: "PUT",
+            path: "/update",
             status: response.err ? 400 : 201,
         };
         return res.status(url.status).json(response);

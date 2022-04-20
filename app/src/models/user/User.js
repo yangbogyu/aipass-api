@@ -2,34 +2,10 @@
 
 const UserMapper = require("../../mapper/UserMapper");
 
-const crypto = require('crypto');
+const crypto = require('../../public/js/user/crypto');
 const jwt = require('../jwt');
 const logger = require("../../../winton");
-
-const createSalt = () =>
-    new Promise((resolve, reject) => {
-        crypto.randomBytes(32, (err, buf) => {
-            if (err) reject(err);
-            resolve(buf.toString('base64'));
-        });
-    });
-
-const createHashedPassword = (user_psword) =>
-    new Promise(async (resolve, reject) => {
-        const salt = await createSalt();
-        crypto.pbkdf2(user_psword, salt, 9999, 64, 'sha512', (err, key) => {
-            if (err) reject(err);
-            resolve({ user_psword: key.toString('base64'), salt });
-        });
-    });
-
-const makePasswordHashed = (user_psword, salt) =>
-    new Promise(async (resolve, reject) => {
-        crypto.pbkdf2(user_psword, salt, 9999, 64, 'sha512', (err, key) => {
-            if (err) reject(err);
-            resolve(key.toString('base64'));
-        });
-    });
+const {checkSpecial, checkEngNum} = require('../../public/js/inputRegular');
 
 class User{
     constructor(body){
@@ -37,21 +13,22 @@ class User{
     }
     
     /**
-     * 로그인
-     * 
+     * 로그인 로직
+     * 로그인 성공시 자동 로그인을위한 토큰값 전달
+     * @returns {success: bool , data: {token: String}}
      */
     async login(){
         const client = this.body;
         try{
             const data = await UserMapper.getUserInfo(client.user_mobile);
             if(data.user_mobile) {
-                client.user_psword = await makePasswordHashed(client.user_psword, data.salt);
+                client.user_psword = await crypto.makePswordHashed(client.user_psword, data.salt);
                 if(data.user_mobile === client.user_mobile && data.user_psword === client.user_psword){
-                    const token = await jwt.sign(data);
+                    const {token} = await jwt.sign(data);
                     delete data.salt;
                     delete data.user_psword;
+                    data.token = token;
                     return {success : true,
-                            token : token,
                             response : data};
                 } 
                 return {success : false, err:"비밀번호가 틀렸습니다."};
@@ -64,8 +41,9 @@ class User{
     }
 
     /**
-     * 회원가입
-     * 
+     * 회원가입 로직
+     * 정상적으로 회원가입을 성공했을경우 자동 로그인 토큰값 전달
+     * @returns {success: bool , data: {token: String}}
      */
     async register(){
         const client = this.body;
@@ -80,7 +58,7 @@ class User{
             return {success : false, err:`비밀번호는 8~20자리로 입력해주세요`};
 
         //비밀번호 암호화
-        const {user_psword, salt } = await createHashedPassword(client.user_psword);
+        const {user_psword, salt } = await crypto.createHashedPsword(client.user_psword);
         client.user_psword = user_psword;
         client.salt = salt;
 
@@ -91,8 +69,39 @@ class User{
         // 회원가입
         try{
             const response = await UserMapper.save(client);
-            const token = await jwt.sign(client);
-            response.token = token;
+            const data = await jwt.sign(client);
+            response.data = data;
+            return response;
+        }catch(err){
+            return {success : false, err:`${err}`};
+        }
+        
+    }
+
+
+    /**
+     * 회원정보 수정
+     * @returns 
+     */
+    async update(){
+        const client = this.body;
+        //어떤 정보인지 체크
+        logger.info("test" +checkEngNum(client.user_psword) + "  "+client.user_psword+ "  ");
+        if(!client.user_name || checkSpecial(client.user_name))
+            return {success : false, err:`이름은 특수문자를 포함 할 수 없습니다.`};
+        if(checkEngNum(client.user_psword) || client.user_psword.length < 8 || client.user_psword.length > 20)
+            return {success : false, err:`비밀번호는 영문과 숫자를 이용하여 8 ~ 20 자리로 생성바랍니다.`};
+
+        //비밀번호 암호화
+        const {user_psword, salt } = await crypto.createHashedPsword(client.user_psword);
+        client.user_psword = user_psword;
+        client.salt = salt;
+
+        // 업데이트
+        try{
+            const response = await UserMapper.update(client);
+            const data = await jwt.sign(client);
+            response.data = data;
             return response;
         }catch(err){
             return {success : false, err:`${err}`};

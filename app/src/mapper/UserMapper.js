@@ -7,7 +7,9 @@ class UserMapper{
 
     static async getUserInfo(user_mobile){
         return new Promise(async (resolve, reject) =>{
-            const query = "SELECT user_no, user_mobile, user_psword, salt, user_code FROM user_base WHERE user_mobile =?;";
+            const query = `SELECT user_no, user_mobile, user_name,
+                        user_psword, salt, user_code
+                        FROM user_base WHERE user_mobile =?;`;
             db.query(query, [user_mobile],  async(err, data) =>{
                 if(err)reject(`${err}`);
                 else if(data[0]) resolve(data[0]);
@@ -33,9 +35,10 @@ class UserMapper{
                     userInfo.user_no],  (err) =>{
                 if(err) reject(`${err}`);
                 else resolve({success : true,
-                    response : { user_no:user_no,
-                            user_mobile:user_mobile,
-                            user_code:user_code
+                    response : { user_no:userInfo.user_no,
+                            user_mobile:userInfo.user_mobile,
+                            user_name:userInfo.user_name,
+                            user_code:userInfo.user_code
                         },
                     });
             });
@@ -55,11 +58,27 @@ class UserMapper{
     static async getUsers(user_mobile){
         return new Promise((resolve, reject) =>{
             const query = `SELECT use_yn FROM user_base
-                            WHERE user_mobile =?;`;
+                        WHERE user_mobile =?;`;
             db.query(query, user_mobile, (err, data) =>{
                 if(err) reject(`${err}`);
                 else if(data[0]) resolve(data[0]);
                 else resolve({"use_yn" : null});
+            });
+        });
+    }
+
+    static async update(userInfo){
+        return new Promise((resolve, reject) =>{
+            const query = `UPDATE user_base
+                        SET user_name = ?, user_psword = ?,
+                        salt = ?, push_agree = ?, advertise_agree = ?,
+                        modi_date = NOW(), modi_no = ?
+                        WHERE user_mobile = ?;`;
+            db.query(query, [userInfo.user_name, userInfo.user_psword,
+                        userInfo.salt, userInfo.push_agree, userInfo.advertise_agree,
+                        userInfo.user_no, userInfo.user_mobile], (err) =>{
+                if(err) reject(`${err}`);
+                else resolve({success: true});
             });
         });
     }

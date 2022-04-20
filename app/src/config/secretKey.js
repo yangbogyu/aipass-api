@@ -1,14 +1,20 @@
-const logger = require("../../winton");
+"use strict";
 
-logger.info("토큰설정 ");
 const secretKey = process.env.SECRET_KEY; // 원하는 시크릿 키
 
-const option = {
+const accessOption = {
         algorithm : process.env.ALGORITHM, // 해싱 알고리즘
-        expiresIn : process.env.EXPIRESIN,  // 토큰 유효 기간
+        expiresIn : "15m",  // 토큰 유효 기간
+        issuer : process.env.ISSUSER, // 발행자
+    }
+
+const refershOption = {
+        algorithm : process.env.ALGORITHM, // 해싱 알고리즘
+        expiresIn : "180 days",  // 토큰 유효 기간
         issuer : process.env.ISSUSER, // 발행자
     }
 module.exports = {
     secretKey,
-    option
+    accessOption,
+    refershOption,
 }
