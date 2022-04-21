@@ -2,6 +2,7 @@
 const User = require("../../models/user/User");
 
 const logger = require("../../../winton");
+const cookieParser = require('cookie-parser');
 
 const output = {
     home: (req, res) =>{
@@ -24,6 +25,7 @@ const process = {
             path: "/login",
             status: response.err ? 400 : 200,
         };
+        logger.info(response.data.token.refershToken);
         return res.status(url.status).json(response);
     },
 

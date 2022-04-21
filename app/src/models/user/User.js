@@ -5,7 +5,19 @@ const UserMapper = require("../../mapper/UserMapper");
 const crypto = require('../../public/js/user/crypto');
 const jwt = require('../jwt');
 const logger = require("../../../winton");
-const {checkSpecial, checkEngNum} = require('../../public/js/inputRegular');
+const {checkSpecial, checkEngNum, checkSpace} = require('../../public/js/inputRegular');
+
+const checkData = (client) =>{
+    //이름 체크
+    client.user_name = client.user_name.replace(/[ ]/gi,''); //이름 공백 제거
+    if(!client.user_name || checkSpecial(client.user_name))
+        return {success : false, err:`이름은 특수문자를 포함 할 수 없습니다.`};
+    
+    if(checkSpace(client.user_psword) || checkEngNum(client.user_psword) ||
+    client.user_psword.length < 8 || client.user_psword.length > 20)
+        return {success : false, err:`비밀번호는 영문과 숫자를 이용하여 8 ~ 20 자리로 생성바랍니다.`};
+    return {success : true};
+};
 
 class User{
     constructor(body){
@@ -24,12 +36,12 @@ class User{
             if(data.user_mobile) {
                 client.user_psword = await crypto.makePswordHashed(client.user_psword, data.salt);
                 if(data.user_mobile === client.user_mobile && data.user_psword === client.user_psword){
-                    const {token} = await jwt.sign(data);
+                    const token = await jwt.sign(data);
                     delete data.salt;
                     delete data.user_psword;
                     data.token = token;
                     return {success : true,
-                            response : data};
+                        data : data};
                 } 
                 return {success : false, err:"비밀번호가 틀렸습니다."};
             }
@@ -85,12 +97,10 @@ class User{
      */
     async update(){
         const client = this.body;
-        //어떤 정보인지 체크
-        logger.info("test" +checkEngNum(client.user_psword) + "  "+client.user_psword+ "  ");
-        if(!client.user_name || checkSpecial(client.user_name))
-            return {success : false, err:`이름은 특수문자를 포함 할 수 없습니다.`};
-        if(checkEngNum(client.user_psword) || client.user_psword.length < 8 || client.user_psword.length > 20)
-            return {success : false, err:`비밀번호는 영문과 숫자를 이용하여 8 ~ 20 자리로 생성바랍니다.`};
+        let response = checkData(client)
+        logger.info(JSON.stringify(client));
+        if(response.success == false)
+            return response;
 
         //비밀번호 암호화
         const {user_psword, salt } = await crypto.createHashedPsword(client.user_psword);
@@ -99,7 +109,7 @@ class User{
 
         // 업데이트
         try{
-            const response = await UserMapper.update(client);
+            response = await UserMapper.update(client);
             const data = await jwt.sign(client);
             response.data = data;
             return response;

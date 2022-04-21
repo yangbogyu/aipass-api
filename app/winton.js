@@ -8,9 +8,10 @@ const { combine, timestamp, printf, colorize } = winston.format;
 const logDir = 'logs';  // logs 디렉토리 하위에 로그 파일 저장
 
 const logFormat = printf(info => {
-    
-    if(info.message.substr(-1) == '\n')
-        info.message = info.message.substring(0,info.message.length-1);
+
+    if(info.message !== undefined && info.message.length !== undefined)
+        if(info.message.substr(-1) == '\n')
+            info.message = info.message.substring(0,info.message.length-1);
     return `${info.timestamp} ${info.level}: ${info.message}`;
 });
 /*

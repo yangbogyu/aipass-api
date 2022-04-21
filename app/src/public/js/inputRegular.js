@@ -51,7 +51,8 @@ function checkEngNum(str) {
 }
 // 공백(스페이스 바)체크
 function checkSpace(str) {
-    if(str.search(/\s/) !== -1) {
+    const regExp = /[ ]/;
+    if(regExp.test(str)) {
         return true; // 스페이스가 있는 경우
     }else{
         return false; // 스페이스 없는 경우
