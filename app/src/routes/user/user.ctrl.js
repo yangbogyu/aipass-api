@@ -5,18 +5,10 @@ const logger = require("../../../winton");
 const cookieParser = require('cookie-parser');
 
 const output = {
-    home: (req, res) =>{
-        logger.info(`GET / 304 "홈 화면 이동"`);
-        res.render("home/index");
-    },
 
-    login: (req, res) =>{
-        logger.info(`GET /login 304 "로그인 화면 이동"`);
-        res.render("home/login");
-    },
 };
 
-const process = {
+const postProcess = {
     login: async(req, res) =>{
         const user = new User(req.body);
         const response = await user.login();
@@ -41,6 +33,11 @@ const process = {
         return res.status(url.status).json(response);
     },
 
+
+
+};
+
+const putProcess = {
     update: async(req, res) => {
         const user = new User(req.body);
         const response = await user.update();
@@ -52,11 +49,28 @@ const process = {
         };
         return res.status(url.status).json(response);
     },
-
 };
+
+const deleteProcess = {
+    delete: async(req, res) => {
+        const user = new User(req.body);
+        const response = await user.delete();
+        
+        const url = {
+            method: "DELETE",
+            path: "/delete",
+            status: response.err ? 400 : 201,
+        };
+        return res.status(url.status).json(response);
+    },
+};
+
 
 
 module.exports = {
     output,
-    process,
+    postProcess,
+    putProcess,
+    deleteProcess,
+
 };

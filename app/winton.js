@@ -2,17 +2,18 @@
 
 const winston = require('winston') ;
 const winstonDaily = require('winston-daily-rotate-file');
-
+const moment = require('moment-timezone');
 const { combine, timestamp, printf, colorize } = winston.format;
 
 const logDir = 'logs';  // logs 디렉토리 하위에 로그 파일 저장
 
 const logFormat = printf(info => {
-
+    
+    const date = moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss'); // 한국시간으로 변경
     if(info.message !== undefined && info.message.length !== undefined)
-        if(info.message.substr(-1) == '\n')
+        if(info.message.substr(-1) == '\n') // 줄넘김 제거
             info.message = info.message.substring(0,info.message.length-1);
-    return `${info.timestamp} ${info.level}: ${info.message}`;
+    return `${date} ${info.level}: ${info.message}`;
 });
 /*
  * Log Level
@@ -66,7 +67,7 @@ logger.stream = {// morgan wiston 설정
 if (process.env.NODE_ENV !== 'production') {
     logger.add(new winston.transports.Console({
         format: combine(
-            colorize({ all: false }), // console 에 출력할 로그 컬러 설정 적용함
+            colorize(), // console 에 출력할 로그 컬러 설정 적용함
             logFormat // log format 적용
         )
     }));

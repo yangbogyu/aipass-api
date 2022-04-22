@@ -19,22 +19,25 @@
  *           http://api.bogyu98.shop/user/login
  *
  * @apiSuccess {boolean} success true
- * @apiSuccess {String} message 결과 메시지
- * @apiSuccess {String[]} response 결과 데이터
+ * @apiSuccess {String[]} data 결과 데이터
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *      {
  *        "success": true,
- *        "response":{
- *            token : "string",
- *            user_no : "string",
- *            user_mobile : "string",
- *            user_code : "string"
+ *        "data": {
+ *              "user_no": "String",
+ *              "user_mobile": "String",
+ *              "user_code": "String",
+ *              "user_name": "String",
+ *              "token": {
+ *                  "accessToken": "token",
+ *                  "refershToken": "token"
+ *              }
  *          }
  *      }
  *
- * @apiSuccess {boolean} success false
+ * @apiError {boolean} success false
  * @apiError {String} err 에러 메시지
  *
  */

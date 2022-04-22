@@ -44,7 +44,7 @@ class UserMapper{
             db.query(query, param, (err) =>{
                 if(err) reject(`${err}`);
                 else resolve({success : true,
-                    response : { user_no:userInfo.user_no,
+                    data : { user_no:userInfo.user_no,
                             user_mobile:userInfo.user_mobile,
                             user_name:userInfo.user_name,
                             user_code:userInfo.user_code
@@ -117,8 +117,8 @@ class UserMapper{
             const query = `UPDATE user_base
                         SET user_name = '삭제', user_psword = '',
                         salt = '', modi_date = NOW(), modi_no =?,
-                        user_mobile =?
-                        WHERE user_mobile =?;`;
+                        gender_code=?, user_mobile =?, use_yn = 'N',
+                        del_yn = 'Y' WHERE user_mobile =?;`;
             const param = [userInfo.user_no,
                 userInfo.user_mobile,
                 userInfo.user_mobile];

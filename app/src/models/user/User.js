@@ -81,8 +81,8 @@ class User{
         // 회원가입
         try{
             const response = await UserMapper.save(client);
-            const data = await jwt.sign(client);
-            response.data = data;
+            const token = await jwt.sign(client);
+            response.data.token = token;
             return response;
         }catch(err){
             return {success : false, err:`${err}`};
@@ -98,7 +98,6 @@ class User{
     async update(){
         const client = this.body;
         let response = checkData(client)
-        logger.info(JSON.stringify(client));
         if(response.success == false)
             return response;
 
@@ -110,13 +109,36 @@ class User{
         // 업데이트
         try{
             response = await UserMapper.update(client);
-            const data = await jwt.sign(client);
-            response.data = data;
+            const token = await jwt.sign(client);
+            response.data = {
+                user_no: client.user_no,
+                user_mobile: client.user_mobile,
+                user_name: client.user_name,
+                user_code: client.user_code,
+                token:token,
+            };
             return response;
         }catch(err){
             return {success : false, err:`${err}`};
         }
         
+    }
+
+    /**
+     * 회원 탈퇴
+     * @returns 
+     */
+    async delete(){
+        const client = this.body;
+
+        // 업데이트
+        try{
+            const response = await UserMapper.delete(client);
+            
+            return response;
+        }catch(err){
+            return {success : false, err:`${err}`};
+        }
     }
 
 }
