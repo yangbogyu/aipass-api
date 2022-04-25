@@ -10,10 +10,13 @@ const logDir = 'logs';  // logs 디렉토리 하위에 로그 파일 저장
 const logFormat = printf(info => {
     
     const date = moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss'); // 한국시간으로 변경
-    if(info.message !== undefined && info.message.length !== undefined)
+    try{
         if(info.message.substr(-1) == '\n') // 줄넘김 제거
             info.message = info.message.substring(0,info.message.length-1);
-    return `${date} ${info.level}: ${info.message}`;
+        return `${date} ${info.level}: ${info.message}`;
+    }catch{
+        return `${date} ${info.level}: ${info.message}`;
+    }
 });
 /*
  * Log Level

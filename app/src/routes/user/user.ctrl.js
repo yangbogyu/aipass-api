@@ -5,7 +5,7 @@ const logger = require("../../../winton");
 const cookieParser = require('cookie-parser');
 
 const output = {
-
+ 
 };
 
 const postProcess = {
@@ -17,7 +17,6 @@ const postProcess = {
             path: "/login",
             status: response.err ? 400 : 200,
         };
-        logger.info(response.data.token.refershToken);
         return res.status(url.status).json(response);
     },
 

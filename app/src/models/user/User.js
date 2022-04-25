@@ -58,7 +58,8 @@ class User{
      * @returns {success: bool , data: {token: String}}
      */
     async register(){
-        const client = this.body;
+        const client = this.body.base;
+        const device = this.body.device;
 
         //유효성 체크
         if(!client.user_mobile  || client.user_mobile.length !== 11)
@@ -80,10 +81,11 @@ class User{
 
         // 회원가입
         try{
-            const response = await UserMapper.save(client);
             const token = await jwt.sign(client);
-            response.data.token = token;
-            return response;
+            client.token = token;
+            const data = await UserMapper.save(client, device);
+            
+            return {success : true, data: data};
         }catch(err){
             return {success : false, err:`${err}`};
         }

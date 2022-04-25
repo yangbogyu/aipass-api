@@ -28,28 +28,48 @@ class UserMapper{
      * @param {Object} userInfo 
      * @returns response
      */
-    static async save(userInfo){
+    static async save(userInfo, userDevice){
         return new Promise((resolve, reject) =>{
-            const query = `INSERT INTO user_base(
-                        user_no, user_mobile, user_psword, salt, user_code, 
-                        birth, gender_code, user_name, advertise_agree, push_agree,
-                        information_agree, reg_no, modi_no
-                        )
-                        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
-            const param = [userInfo.user_no, userInfo.user_mobile,
-                userInfo.user_psword, userInfo.salt, userInfo.user_code,
-                userInfo.birth, userInfo.gender_code, userInfo.user_name,
-                userInfo.advertise_agree, userInfo.push_agree,
-                userInfo.information_agree, userInfo.user_no, userInfo.user_no]
+            const query = `INSERT INTO user_base SET ?;
+                        INSERT INTO user_device SET ?`
+
+            const param = [ {
+                    user_no: userInfo.user_no,
+                    user_mobile: userInfo.user_mobile,
+                    user_psword: userInfo.user_psword,
+                    salt: userInfo.salt,
+                    user_code: userInfo.user_code,
+                    birth: userInfo.birth,
+                    gender_code: userInfo.gender_code,
+                    user_name: userInfo.user_name,
+                    advertise_agree: userInfo.advertise_agree,
+                    push_agree: userInfo.push_agree,
+                    information_agree: userInfo.information_agree,
+                    reg_no: userInfo.user_no,
+                    modi_no: userInfo.user_no,
+                },
+                {
+                    user_no: userInfo.user_no,
+                    user_mobile: userInfo.user_mobile,
+                    device_id: userDevice.device_id,
+                    push_token: userDevice.push_token,
+                    refersh_token: userInfo.token.refersh_token,
+                    os: userDevice.os,
+                    device_data: JSON.stringify(userDevice),
+                }
+            ];
             db.query(query, param, (err) =>{
                 if(err) reject(`${err}`);
-                else resolve({success : true,
-                    data : { user_no:userInfo.user_no,
-                            user_mobile:userInfo.user_mobile,
-                            user_name:userInfo.user_name,
-                            user_code:userInfo.user_code
+                else resolve({ user_no: userInfo.user_no,
+                            user_mobile: userInfo.user_mobile,
+                            user_name: userInfo.user_name,
+                            user_code: userInfo.user_code,
+                            token: {
+                                access_token: userInfo.token.access_token,
+                                refersh_token: userInfo.token.refersh_token
+                            }
                         },
-                    });
+                    );
             });
         });
     }
@@ -125,6 +145,23 @@ class UserMapper{
             db.query(query, param, (err) =>{
                 if(err) reject(`${err}`);
                 else resolve({success: true});
+            });
+        });
+    }
+
+    /**
+     * accessToken 재발급
+     * @param {String} refershToken 
+     * @returns use_yn
+     */
+     static async getUsers(refershToken){
+        return new Promise((resolve, reject) =>{
+            const query = `SELECT use_yn FROM user_base
+                        WHERE user_mobile =?;`;
+            db.query(query, user_mobile, (err, data) =>{
+                if(err) reject(`${err}`);
+                else if(data[0]) resolve(data[0]);
+                else resolve({"use_yn" : null});
             });
         });
     }
