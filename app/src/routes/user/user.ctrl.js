@@ -5,6 +5,17 @@ const logger = require("../../../winton");
 const cookieParser = require('cookie-parser');
 
 const output = {
+    login: async(req, res) => {
+        const user = new User(req.data);
+        const response = await user.getUserInfo(req.data);
+        const url = {
+            method: "GET",
+            path: "/login",
+            status: response.status,
+        };
+        delete response.status;
+        return res.status(url.status).json(response);
+    },
  
 };
 
@@ -15,8 +26,9 @@ const postProcess = {
         const url = {
             method: "POST",
             path: "/login",
-            status: response.err ? 400 : 200,
+            status: response.status,
         };
+        delete response.status;
         return res.status(url.status).json(response);
     },
 
@@ -27,12 +39,11 @@ const postProcess = {
         const url = {
             method: "POST",
             path: "/register",
-            status: response.err ? 400 : 201,
+            status: response.status
         };
+        delete response.status;
         return res.status(url.status).json(response);
     },
-
-
 
 };
 
@@ -44,8 +55,9 @@ const putProcess = {
         const url = {
             method: "PUT",
             path: "/update",
-            status: response.err ? 400 : 201,
+            status: response.status
         };
+        delete response.status;
         return res.status(url.status).json(response);
     },
 };
@@ -58,8 +70,9 @@ const deleteProcess = {
         const url = {
             method: "DELETE",
             path: "/delete",
-            status: response.err ? 400 : 201,
+            status: response.status,
         };
+        delete response.status;
         return res.status(url.status).json(response);
     },
 };

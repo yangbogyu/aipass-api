@@ -22,17 +22,24 @@
  * @apiExample {curl} Example usage:
  *     curl  --header "Content-Type: application/json"
  *           --request POST 
- *           --data '{"user_mobile":"01075293575",
- *                  "user_psword": "1234",
- *                  "user_code: "01",
+ *           --data '{
+ *                  "user_mobile": "01011111139",
+ *                  "user_psword": "12345678",
+ *                  "user_code": "01",
  *                  "birth": "1998-12-15",
  *                  "gender_code": "01",
- *                  "user_name": "양보규",
+ *                  "user_name": "test",
  *                  "advertise_agree": "Y",
  *                  "push_agree": "Y",
- *                  "information_agree": "Y"
+ *                  "information_agree": "Y",
+ *                  "device_id": "123",
+ *                  "push_token": "push",
+ *                  "model": "s22",
+ *                  "os" : "ios",
+ *                  "os_version": "10",
+ *                  "app_version": "1.0"
  *              }' 
- *           http://api.bogyu98.shop/user/register
+ *           http:/192.168.1.206:5000/user/register
  *
  *
  * @apiSuccess {boolean} success true

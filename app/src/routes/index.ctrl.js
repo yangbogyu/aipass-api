@@ -19,6 +19,7 @@ const output = {
             path: "/",
             status: data.status,
         };
+        delete data.status;
         return res.status(url.status).json(response);
     },
 };
@@ -31,12 +32,13 @@ const postProcess = {
             success : data.err ? false : true,
         }
         if(data.err) response.err = data.err;
-        else response.data = data.data;
+            else response.data = data.data;
         const url = {
             method: "POST",
             path: "/refresh",
             status: data.status,
         };
+        delete data.status;
         return res.status(url.status).json(response);
     },
 };

@@ -28,7 +28,7 @@
  *                  "push_agree": "Y",
  *                  "information_agree": "Y",
  *              }' 
- *           http://api.bogyu98.shop/user/update
+ *           http:/192.168.1.206:5000/user/update
  *
  *
  * @apiSuccess {boolean} success true
