@@ -16,7 +16,7 @@
  *     curl  --header "Content-Type: application/json"
  *           --request POST 
  *           --data '{"user_mobile":"01075293575", "user_psword": "12345678"}' 
- *           http:/192.168.1.206:5000/user/login
+ *           https://bogyu.shop/user/login
  *
  * @apiSuccess {boolean} success true
  * @apiSuccess {String[]} data 결과 데이터
@@ -60,7 +60,7 @@
  * @apiExample {curl} Example usage:
  *   curl  --header "Content-Type: application/json"
  *         --request GET
- *       http:/192.168.1.206:5000/user/login
+ *       https://bogyu.shop/user/login
  *
  * 
  * @apiSuccess {boolean} success true
@@ -74,11 +74,7 @@
  *              "user_no": "String",
  *              "user_mobile": "String",
  *              "user_code": "String",
- *              "user_name": "String",
- *              "token": {
- *                  "accessToken": "token",
- *                  "refershToken": "token"
- *              }
+ *              "user_name": "String"
  *          }
  *      }
  *

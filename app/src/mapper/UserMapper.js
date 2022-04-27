@@ -147,14 +147,29 @@ class UserMapper{
      */
     static async update(userInfo){
         return new Promise((resolve, reject) =>{
+            /*
             const query = `UPDATE user_base
                         SET user_name = ?, user_psword = ?,
-                        salt = ?, push_agree = ?, advertise_agree = ?,
+                        salt = ?, gender_code=?,
                         modi_date = NOW(), modi_no = ?
-                        WHERE user_mobile = ?;`;
+                        WHERE user_no = ?;`;
             const param = [userInfo.user_name, userInfo.user_psword,
-                userInfo.salt, userInfo.push_agree, userInfo.advertise_agree,
-                userInfo.user_no, userInfo.user_mobile]
+                userInfo.salt, userInfo.gender_code, userInfo.user_no,
+                userInfo.user_no]
+            */
+            let query = `UPDATE user_base
+                        SET modi_date = NOW(), modi_no= ?`;
+            let param = [userInfo.user_no];
+            for (const [key, value] of Object.entries(userInfo)) {
+                if(!(key === 'user_no')){
+                    query += `,${key}=?`
+                    param.push(value);
+                }
+            }
+            query += `WHERE user_no = ?;`;
+            param.push(userInfo.user_no);
+            logger.info("query ==> "+query);
+            logger.info("param ==> "+param);
             db.query(query, param, (err) =>{
                 if(err) reject(`${err}`);
                 else resolve({success: true, status: 200});

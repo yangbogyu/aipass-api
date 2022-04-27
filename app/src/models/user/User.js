@@ -7,17 +7,21 @@ const {jwt} = require('../jwt');
 const logger = require("../../../winton");
 const {checkSpecial, checkEngNum, checkSpace} = require('../../public/js/inputRegular');
 
-const checkData = (client) =>{
+const checkName = (user_name) =>{
     //이름 체크
-    client.user_name = client.user_name.replace(/[ ]/gi,''); //이름 공백 제거
-    if(!client.user_name || checkSpecial(client.user_name))
+    user_name = user_name.replace(/[ ]/gi,''); //이름 공백 제거
+    if(!user_name || checkSpecial(user_name))
         return {success: false, status: 400, err:`이름은 특수문자를 포함 할 수 없습니다.`};
-    
-    if(checkSpace(client.user_psword) || checkEngNum(client.user_psword) ||
-    client.user_psword.length < 8 || client.user_psword.length > 20)
+    return {success: true, status: 200};
+};
+const checkPsword = (user_psword) =>{
+   
+    if(checkSpace(user_psword) || checkEngNum(user_psword) ||
+    user_psword.length < 8 || user_psword.length > 20)
         return {success: false, status: 400, err:`비밀번호는 영문과 숫자를 이용하여 8 ~ 20 자리로 생성바랍니다.`};
     return {success: true, status: 200};
 };
+
 
 class User{
     constructor(body){
@@ -27,7 +31,7 @@ class User{
     /**
      * 로그인 로직
      * 로그인 성공시 자동 로그인을위한 토큰값 전달
-     * @returns {status: int , data: {token: String}}
+     * @returns 
      */
     async login(){
         const client = this.body;
@@ -51,7 +55,9 @@ class User{
     }
 
     /**
-     * 
+     * 메인화면용 유저정보 전송
+     * 토큰기반 로그인
+     * @returns 
      */
     async getUserInfo(){
         const client = this.body;
@@ -72,7 +78,7 @@ class User{
     /**
      * 회원가입 로직
      * 정상적으로 회원가입을 성공했을경우 자동 로그인 토큰값 전달
-     * @returns {success: bool , data: {token: String}}
+     * @returns 
      */
     async register(){
         const client = this.body;
@@ -115,18 +121,29 @@ class User{
      */
     async update(){
         const client = this.body;
-        let response = checkData(client)
-        if(response.success == false)
-            return response;
 
+        if(client.user_name){
+            const response = checkName(client.user_name);
+            if(response.success == false)
+                return response;
+            client.user_name = client.user_name.replace(/[ ]/gi,''); //이름 공백 제거
+        }
         //비밀번호 암호화
-        const {user_psword, salt } = await crypto.createHashedPsword(client.user_psword);
-        client.user_psword = user_psword;
-        client.salt = salt;
+        if(client.user_psword){
+            const response = checkPsword(client.user_psword);
+            if(response.success == false)
+                return response;
+            const {user_psword, salt } = await crypto.createHashedPsword(client.user_psword);
+            client.user_psword = user_psword;
+            client.salt = salt;
+        }
 
         // 업데이트
         try{
-            response = await UserMapper.update(client);
+            const response = await UserMapper.update(client);
+            if(response.err){
+                return{success : false, status: 400, err:`${response.err}`};
+            }
             const token = await jwt.sign(client);
             response.data = {
                 user_no: client.user_no,

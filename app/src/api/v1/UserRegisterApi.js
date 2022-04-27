@@ -39,7 +39,7 @@
  *                  "os_version": "10",
  *                  "app_version": "1.0"
  *              }' 
- *           http:/192.168.1.206:5000/user/register
+ *           https://bogyu.shop/user/register
  *
  *
  * @apiSuccess {boolean} success true

@@ -12,8 +12,6 @@
  * @apiBody {String} user_psword 비밀번호
  * @apiBody {String} gender_code 성별 코드(B002)
  * @apiBody {String} user_name 사용자 이름
- * @apiBody {String} push_agree 푸시 동의(Y/N)
- * @apiBody {String} information_agree 광고 동의(Y/N)
  *
  * @apiSampleRequest  /user/update
  *
@@ -21,14 +19,12 @@
  *     curl  --header "Content-Type: application/json"
  *           --request POST 
  *           --data '{"user_no":"2022000045",
- *                  "user_mobile":"01075293575",
- *                  "user_psword": "1234",
+ *                  "user_mobile":"01012341234",
+ *                  "user_psword": "12345678",
  *                  "gender_code": "01",
- *                  "user_name": "양보규",
- *                  "push_agree": "Y",
- *                  "information_agree": "Y",
+ *                  "user_name": "test"
  *              }' 
- *           http:/192.168.1.206:5000/user/update
+ *           https://bogyu.shop/user/update
  *
  *
  * @apiSuccess {boolean} success true

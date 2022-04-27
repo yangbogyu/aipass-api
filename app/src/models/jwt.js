@@ -33,7 +33,7 @@ class jwt{
             user_no: user.user_no,
             user_mobile: user.user_mobile,
             user_code: user.user_code,
-        };
+        };  
         const accessToken = jwtKen.sign(accessData, secretKey, accessOption);
         const token = {access_token:accessToken};
         return token;

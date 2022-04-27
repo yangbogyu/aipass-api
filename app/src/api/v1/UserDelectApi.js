@@ -18,7 +18,7 @@
  *           --data '{"user_no":"2022000045",
  *                  "user_mobile":"01075293575"
  *              }' 
- *           http:/192.168.1.206:5000/user/delect
+ *           https://bogyu.shop/user/delect
  *
  *
  * @apiSuccess {boolean} success true
