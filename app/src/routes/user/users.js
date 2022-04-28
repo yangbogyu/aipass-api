@@ -7,7 +7,7 @@ router.get('/login', verifyAccessToken, ctrl.output.login);
 
 router.post('/register', ctrl.postProcess.register);
 router.post('/login', ctrl.postProcess.login);
-router.put('/update', ctrl.putProcess.update);
+router.put('/update',verifyAccessToken, ctrl.putProcess.update);
 router.delete('/delete', ctrl.deleteProcess.delete);
 
 module.exports = router;

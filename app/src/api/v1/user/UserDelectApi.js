@@ -6,7 +6,10 @@
  * @apiVersion        1.0.0
  * @apiName           user-delect
  * @apiGroup          user
- *
+ * @apiHeader {String} Authorization access_token
+ * @apiHeaderExample {Header} Header-Example
+ *     "Authorization: Bearer 5f048fe"
+ * 
  * @apiBody {String} user_no 고객번호
  * @apiBody {String} user_mobile 전화번호
  *

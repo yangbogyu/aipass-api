@@ -122,13 +122,22 @@ class User{
     async update(){
         const client = this.body;
 
+        // 토큰 정보와 수정자 정보 일치하는지 확인
+        if(client.user_no !== client.data.user_no) return {success: false, status: 401, err:'토큰정보와 수정하는 정보가 다릅니다.'};
+        else delete client.data;
+
+        // 알림과 다른 key 같이 왔는지 파악
+        if((client.push_agree || client.advertise_agree) && (client.user_name|| client.user_psword || client.gender_code))
+            return {success: false, status: 400, err:'알림과 개인정보는 한번에 수정 할 수 없습니다.'};
+
+        // 이름 체크 및 공백재거
         if(client.user_name){
             const response = checkName(client.user_name);
             if(response.success == false)
                 return response;
             client.user_name = client.user_name.replace(/[ ]/gi,''); //이름 공백 제거
         }
-        //비밀번호 암호화
+        //비밀번호 체크 및 암호화
         if(client.user_psword){
             const response = checkPsword(client.user_psword);
             if(response.success == false)

@@ -1,17 +1,23 @@
 /**
  * @api {put} /user/update 회원정보 수정
  *
- * @apiDescription   사용자 정보를 수정합니다.
+ * @apiDescription   사용자 정보를 수정합니다. [광고/푸시와 다른 정보 한번에 수정 불가능]
  *
  * @apiVersion        1.0.0
  * @apiName           user-update
  * @apiGroup          user
- *
+ * 
+ * @apiHeader {String} Authorization access_token
+ * @apiHeaderExample {Header} Header-Example
+ *     "Authorization: Bearer 5f048fe"
+ * 
  * @apiBody {String} user_no 고객번호
  * @apiBody {String} user_mobile 전화번호
  * @apiBody {String} user_psword 비밀번호
  * @apiBody {String} gender_code 성별 코드(B002)
  * @apiBody {String} user_name 사용자 이름
+ * @apiBody {String} push_agree 푸시 동의(Y/N)
+ * @apiBody {String} information_agree 광고 동의(Y/N)
  *
  * @apiSampleRequest  /user/update
  *

@@ -147,19 +147,11 @@ class UserMapper{
      */
     static async update(userInfo){
         return new Promise((resolve, reject) =>{
-            /*
-            const query = `UPDATE user_base
-                        SET user_name = ?, user_psword = ?,
-                        salt = ?, gender_code=?,
-                        modi_date = NOW(), modi_no = ?
-                        WHERE user_no = ?;`;
-            const param = [userInfo.user_name, userInfo.user_psword,
-                userInfo.salt, userInfo.gender_code, userInfo.user_no,
-                userInfo.user_no]
-            */
+
             let query = `UPDATE user_base
                         SET modi_date = NOW(), modi_no= ?`;
             let param = [userInfo.user_no];
+            // 들어온 key 만 업데이트
             for (const [key, value] of Object.entries(userInfo)) {
                 if(!(key === 'user_no')){
                     query += `,${key}=?`
