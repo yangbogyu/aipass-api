@@ -25,7 +25,14 @@ const verifyAccessToken = (req, res, next) =>{
         next();
     });
   };
-
+const accessTokenData = (req, res, next)=>{
+    const authHeader = req.headers["authorization"];
+    const accessToken = authHeader && authHeader.split(" ")[1];
+    jwtKen.verify(accessToken, process.env.SECRET_KEY, (user) => {
+        req.data=user;
+        next();
+    });
+}
 
 class jwt{
     static async access(user){
@@ -61,12 +68,13 @@ class jwt{
 
 
     // access_token refresh_token 기반 재생성
-    static async setAccessToken(refreshToken){
-
-        if(!refreshToken) return {status: 401, err:"refreshToken이 없거나 형식이 잘못되었습니다."}
+    static async setAccessToken(req){
+        const body = req.body;
+        const data = req.data;
+        if(!body.refersh_token) return {status: 401, err:"refreshToken이 없거나 형식이 잘못되었습니다."}
         const res =  new Promise(async (resolve, reject) =>{
             jwtKen.verify(
-            refreshToken,
+            body.refersh_token,
             process.env.SECRET_KEY,
             async (error, user) =>{
                 if(error) {
@@ -77,26 +85,33 @@ class jwt{
                 } else{
                     const now = Math.floor(new Date().getTime() / 1000);
                     const month = 60*60*24*30;
-                    const response = await UserMapper.getRefersh(user.user_no,refreshToken);
-                        if(response.err){
-                            resolve({status: 401, err : `refreshToken 다름`});
+                    user.user_mobile = data.user_mobile;
+                    user.user_code = data.user_code;
+
+                    const response = await UserMapper.getRefersh(user.user_no);
+
+                    if(response.err) reject({success: false, status: 401, err : response.err});
+                    else if(response.device_id !== body.device_id) reject({success: false, status: 401, err : `기존 디바이스가 아님`});
+                    else if(response.refersh_token !== body.refersh_token) reject({success: false, status: 401, err : `토큰이 다름`});
+                    else {
+                        if (user.exp - now < month){ // refreshToken 기간이 30일 이하 남으면 새로 발급
+                            const token = await this.sign(user);
+                            resolve({success: true, status: 200, data: token});
+                        } else {
+                            const token = await this.access(user);
+                            resolve({success: true, status: 200, data: token});
                         }
-                    if (user.exp - now < month){ // refreshToken 기간이 30일 이하 남으면 새로 발급
-                        const token = await this.sign(user);
-                        resolve({status: 200, data: token});
-                    } else {
-                        const token = await this.access(user);
-                        resolve({status: 200, data: token});
                     }
                 }
             });
         })
         .catch((err) =>{
-            return {status: err.status, err:err.err};
+            return {success: false, status: err.status, err:err.err};
         }); 
         
         return res;
     }
+
 }
 
-module.exports = {jwt, verifyAccessToken};
+module.exports = {jwt, verifyAccessToken, accessTokenData};

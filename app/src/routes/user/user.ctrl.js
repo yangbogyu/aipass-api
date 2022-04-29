@@ -65,6 +65,7 @@ const putProcess = {
 
 const deleteProcess = {
     delete: async(req, res) => {
+        req.body.data = req.data;
         const user = new User(req.body);
         const response = await user.delete();
         

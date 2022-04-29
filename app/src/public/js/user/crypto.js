@@ -35,8 +35,9 @@ class HashedPsword{
      */
     static async makePswordHashed(user_psword, salt) {
         return new Promise(async (resolve, reject) => {
+            if(!user_psword || !salt) reject(new Error('body오류'));
             crypto.pbkdf2(user_psword, salt, 9999, 64, 'sha512', (err, key) => {
-                if (err) reject(err);
+                if (err) reject(new Error(`${err}`));
                 resolve(key.toString('base64'));
             });
         });

@@ -17,12 +17,10 @@ class UserMapper{
                         user_psword, salt, user_code
                         FROM user_base WHERE user_mobile =?;`;
             db.query(query, [user_mobile],  async(err, data) =>{
-                if(err)reject(`${err}`);
+                if(err)reject(new Error(`${err}`));
                 else if(data[0]) resolve(data[0]);
-                else resolve({"user_mobile" : null, "user_psword" : null, "salt": null});
+                else reject(new Error('데이터 없음'));
             });
-        }).catch((err) => {
-            return{err:`${err}`};
         });
     }
 
@@ -201,21 +199,19 @@ class UserMapper{
      * @param {String} userInfo{user_no, refersh_token} 
      * @returns use_yn
      */
-     static async getRefersh(user_no, refersh_token){
+     static async getRefersh(user_no){
         return new Promise((resolve, reject) =>{
-            const query = `SELECT refersh_token FROM user_device
+            const query = `SELECT device_id, refersh_token FROM user_device
                 WHERE user_no=?`;
             const param = user_no;
             db.query(query, param, (err, data) =>{
                 if(err) reject(`${err}`);
                 else if(data[0]) {
-                    if(data[0].refersh_token === refersh_token)
-                        resolve(data[0]);
-                    else reject({err: 'refersh_token이 다릅니다.'});
+                    resolve(data[0]);
                 } else resolve({err: 'refersh_token 없습니다.'});
             });
         }).catch((err) => {
-            return{err:`${err}`};
+            return{err:err};
         });
     }
 

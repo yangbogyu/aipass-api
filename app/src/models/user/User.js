@@ -36,19 +36,29 @@ class User{
     async login(){
         const client = this.body;
         try{
-            const data = await UserMapper.login(client.user_mobile);
-            if(data.user_mobile) {
-                client.user_psword = await crypto.makePswordHashed(client.user_psword, data.salt);
-                if(data.user_mobile === client.user_mobile && data.user_psword === client.user_psword){
-                    const token = await jwt.sign(data);
-                    delete data.salt;
-                    delete data.user_psword;
-                    data.token = token;
-                    return {success: true, status: 200, data : data};
-                } 
-                return {success: false, status: 400, err:"비밀번호가 틀렸습니다."};
-            }
-            return {success: false, status: 400, err:"아이디가 없습니다."};
+            return await UserMapper.login(client.user_mobile)
+            .then(async (data) => {
+                logger.info(JSON.stringify(data));
+                return await crypto.makePswordHashed(client.user_psword, data.salt)
+                .then(async (user_psword) =>{
+                    if(data.user_mobile === client.user_mobile && data.user_psword === user_psword){
+                        return await jwt.sign(data)
+                        .then(async (token) =>{
+                            delete data.salt;
+                            delete data.user_psword;
+                            data.token = token;
+                            return {success: true, status: 200, data : data};
+                        });
+                    }
+                    return {success: false, status: 400, err: "비밀번호가 틀렸습니다."};
+                })
+                .catch((err) =>{
+                    return {success: false, status: 400, err:`${err}`};
+                });
+            })
+            .catch((err) =>{
+                return {success: false, status: 400, err:`${err}`};
+            });
         } catch(err){
             return {success: false, status: 400, err:`${err}`};
         }
@@ -177,6 +187,9 @@ class User{
 
         // 업데이트문으로 처리
         try{
+            logger.info(JSON.stringify(client));
+            if(client.user_no !== client.data.user_no) return {success : false, status: 400, err:`고객정보 다름`};
+
             const response = await UserMapper.delete(client);
             if(response.err){
                 return {success : false, status: 400, err:`${response.err}`};

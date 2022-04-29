@@ -7,11 +7,9 @@
  * @apiName           token-refresh
  * @apiGroup          toekn
  * 
- * @apiHeader {String} Authorization access_token
- * @apiHeaderExample {Header} Header-Example
- *     "Authorization: Bearer 5f048fe"
- * 
  * @apiBody {String} refresh_token 재발급 토큰
+ * @apiBody {String} device_id 디바이스 체크
+ *
  *
  * @apiSampleRequest  /refresh
  *
@@ -19,6 +17,7 @@
  *     curl  --header "Content-Type: application/json"
  *           --request POST 
  *           --data '{"refresh_token":"5f048fe"
+ *                  "device_id": "device_id"
  *              }' 
  *           https://bogyu.shop/refresh
  *

@@ -13,10 +13,9 @@ const output = {
         }
         if(data.err) response.err = data.err;
         else response.data = req.data;
-        logger.info("req=> "+JSON.stringify(response));
         const url = {
             method: "GET",
-            path: "/",
+            path: "/:device_id",
             status: data.status,
         };
         delete data.status;
@@ -26,19 +25,13 @@ const output = {
 
 const postProcess = {
     refresh: async(req, res) =>{
-        const refreshToken = req.body.refresh_token;
-        const data = await jwt.setAccessToken(refreshToken);
-        const response = {
-            success : data.err ? false : true,
-        }
-        if(data.err) response.err = data.err;
-            else response.data = data.data;
+        const response = await jwt.setAccessToken(req);
         const url = {
             method: "POST",
             path: "/refresh",
-            status: data.status,
+            status: response.status,
         };
-        delete data.status;
+        delete response.status;
         return res.status(url.status).json(response);
     },
 };
