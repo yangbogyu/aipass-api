@@ -2,9 +2,9 @@
 //토큰 인증
 const jwtKen = require('jsonwebtoken');
 const UserMapper = require('../mapper/UserMapper');
-const express = require("express");
 const logger = require('../../winton');
 const {secretKey, accessOption, refershOption} = require('../config/secretKey');
+const {isEmpty} = require('../public/js/inputRegular');
 
 const verifyAccessToken = (req, res, next) =>{
     const authHeader = req.headers["authorization"];
@@ -25,12 +25,20 @@ const verifyAccessToken = (req, res, next) =>{
         next();
     });
   };
+
 const accessTokenData = (req, res, next)=>{
     const authHeader = req.headers["authorization"];
     const accessToken = authHeader && authHeader.split(" ")[1];
-    jwtKen.verify(accessToken, process.env.SECRET_KEY, (user) => {
-        req.data=user;
+    jwtKen.verify(accessToken, process.env.SECRET_KEY, (error, user) => {
+        if(!error){
+            req.data = {
+                user_no: user.user_no,
+                user_mobile: user.user_mobile,
+                user_code: user.user_code,
+            };
+        }
         next();
+        
     });
 }
 
@@ -72,6 +80,7 @@ class jwt{
         const body = req.body;
         const data = req.data;
         if(!body.refersh_token) return {status: 401, err:"refreshToken이 없거나 형식이 잘못되었습니다."}
+        if(!data) return {status: 401, err:"accessToken이 없거나 형식이 잘못되었습니다."}
         const res =  new Promise(async (resolve, reject) =>{
             jwtKen.verify(
             body.refersh_token,

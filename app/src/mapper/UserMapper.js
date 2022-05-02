@@ -30,9 +30,9 @@ class UserMapper{
                         FROM user_base WHERE user_no =? AND user_mobile =?;`;
             const param = [user_no, user_mobile];
             db.query(query, param,  async(err, data) =>{
-                if(err)reject(`${err}`);
+                if(err)reject(new Error(`${err}`));
                 else if(data[0]) resolve(data[0]);
-                else resolve({err: 'null'});
+                else reject(new Error(`데이터 없음`));
             });
         }).catch((err) => {
             return{err:`${err}`};

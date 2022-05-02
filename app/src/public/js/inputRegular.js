@@ -58,6 +58,12 @@ function checkSpace(str) {
         return false; // 스페이스 없는 경우
     }
 }
+function isEmpty(str){
+    if(typeof str == "undefined" || str == null || str == "")
+        return true;
+    else
+        return false ;
+}
 
 module.exports = {
     checkSpecial,
@@ -65,5 +71,6 @@ module.exports = {
     checkEngNum,
     checkEng,
     checkNum,
-    checkKor
+    checkKor,
+    isEmpty
 };

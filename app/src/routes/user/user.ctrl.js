@@ -7,14 +7,22 @@ const cookieParser = require('cookie-parser');
 const output = {
     login: async(req, res) => {
         const user = new User(req.data);
-        const response = await user.getUserInfo(req.data);
         const url = {
             method: "GET",
             path: "/login",
-            status: response.status,
         };
-        delete response.status;
-        return res.status(url.status).json(response);
+        return await user.getUserInfo()
+        .then((response)=>{
+            if(response.success) url.status = 200;
+            else url.status = 401;
+            return res.status(url.status).json(response);
+        })
+        .catch((err)=> {
+            logger.error(JSON.stringify(err));
+            url.status = 401;
+            return res.status(url.status).json(err);
+        });
+        
     },
  
 };
@@ -22,14 +30,22 @@ const output = {
 const postProcess = {
     login: async(req, res) =>{
         const user = new User(req.body);
-        const response = await user.login();
         const url = {
             method: "POST",
             path: "/login",
-            status: response.status,
         };
-        delete response.status;
-        return res.status(url.status).json(response);
+        return await user.login()
+        .then((response) => {
+            if(response.success) url.status = 200;
+            else url.status = 401;
+            return res.status(url.status).json(response);
+        })
+        .catch((err)=> {
+            logger.error(JSON.stringify(err));
+            url.status = 401;
+            return res.status(url.status).json(err);
+        });
+        
     },
 
     register: async(req, res) => {

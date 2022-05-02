@@ -35,33 +35,18 @@ class User{
      */
     async login(){
         const client = this.body;
-        try{
-            return await UserMapper.login(client.user_mobile)
-            .then(async (data) => {
-                logger.info(JSON.stringify(data));
-                return await crypto.makePswordHashed(client.user_psword, data.salt)
-                .then(async (user_psword) =>{
-                    if(data.user_mobile === client.user_mobile && data.user_psword === user_psword){
-                        return await jwt.sign(data)
-                        .then(async (token) =>{
-                            delete data.salt;
-                            delete data.user_psword;
-                            data.token = token;
-                            return {success: true, status: 200, data : data};
-                        });
-                    }
-                    return {success: false, status: 400, err: "비밀번호가 틀렸습니다."};
-                })
-                .catch((err) =>{
-                    return {success: false, status: 400, err:`${err}`};
-                });
-            })
-            .catch((err) =>{
-                return {success: false, status: 400, err:`${err}`};
+        
+        return await UserMapper.login(client.user_mobile)
+        .then(async (data) => {
+            return await crypto.makePswordHashed(client, data)
+            .then((data) =>{
+                return {success: true, data: data};
             });
-        } catch(err){
-            return {success: false, status: 400, err:`${err}`};
-        }
+        })
+        .catch((err) =>{
+            return {success: false, err:`${err}`};
+        });
+            
     }
 
     /**
@@ -71,18 +56,14 @@ class User{
      */
     async getUserInfo(){
         const client = this.body;
-        logger.info(JSON.stringify(client));
-        try{
-            if(client.err) return {status: client.status, err:client.err};
-            const data = await UserMapper.getUserInfo(client.user_no, client.user_mobile);
-            if(data.err){
-                return {success: false, status: 401, err:data.err};
-            }
-            return {success: true, status: 200, data:data};
-
-        } catch(err){
-            return {success: false, status: 401, err:err};
-        }
+        if(client.err) return {success: false, err:client.err};
+        return await UserMapper.getUserInfo(client.user_no, client.user_mobile)
+        .then((data) => {
+            return {success: true,data:data};
+        })
+        .catch((err)=>{
+            return {success: false, err:err};
+        });
     }
 
     /**

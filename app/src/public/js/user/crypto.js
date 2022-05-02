@@ -1,6 +1,7 @@
 "use strict";
 
 const crypto = require('crypto');
+const {jwt} = require('../../../models/jwt');
 
 const createSalt = () =>
     new Promise((resolve, reject) => {
@@ -33,13 +34,21 @@ class HashedPsword{
      * @param {String} salt 
      * @returns {String}
      */
-    static async makePswordHashed(user_psword, salt) {
+    static async makePswordHashed(client, data) {
         return new Promise(async (resolve, reject) => {
-            if(!user_psword || !salt) reject(new Error('body오류'));
-            crypto.pbkdf2(user_psword, salt, 9999, 64, 'sha512', (err, key) => {
-                if (err) reject(new Error(`${err}`));
-                resolve(key.toString('base64'));
-            });
+            if(!client.user_psword || !data.salt) reject(new Error('body오류'));
+            else crypto.pbkdf2(client.user_psword, data.salt, 9999, 64, 'sha512', async (err, key) => {
+                    if (err) reject(new Error(`${err}`));
+                    else if(data.user_mobile === client.user_mobile && data.user_psword === key.toString('base64')){
+                        return await jwt.sign(data)
+                        .then(async (token) =>{
+                            delete data.salt;
+                            delete data.user_psword;
+                            data.token = token;
+                            resolve(data);
+                        });
+                    } else reject(new Error(`비빌번호 다름`));
+                });
         });
     }
 }
