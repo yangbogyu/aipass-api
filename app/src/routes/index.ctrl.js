@@ -15,7 +15,7 @@ const output = {
         else response.data = req.data;
         const url = {
             method: "GET",
-            path: "/:device_id",
+            path: "/",
             status: data.status,
         };
         delete data.status;

@@ -14,6 +14,7 @@ const logger = require('./winton');
 
 const indexRouter = require('./src/routes/index');
 const usersRouter = require('./src/routes/user/users');
+const aptRouter = require('./src/routes/apt/apts');
 
 const app = express();
 // view engine setup
@@ -34,6 +35,7 @@ app.use('/api-docs', express.static(__dirname + '/doc'));
 
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
+app.use('/apt', aptRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

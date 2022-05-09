@@ -16,6 +16,12 @@
  * @apiBody {String} advertise_agree 개인정보 동의(Y/N)
  * @apiBody {String} push_agree 푸시 동의(Y/N)
  * @apiBody {String} information_agree 광고 동의(Y/N)
+ * @apiBody {String} unique_id 기기 아이디
+ * @apiBody {String} push_token 푸시 토큰
+ * @apiBody {String} model 핸드폰 기종
+ * @apiBody {String} os 핸드폰 OS
+ * @apiBody {String} os_version 핸드폰 OS 버전
+ * @apiBody {String} app_version 설치 어플 버전
  *
  * @apiSampleRequest  /user/register
  *
@@ -32,9 +38,9 @@
  *                  "advertise_agree": "Y",
  *                  "push_agree": "Y",
  *                  "information_agree": "Y",
- *                  "device_id": "123",
+ *                  "unique_id": "123",
  *                  "push_token": "push",
- *                  "model": "s22",
+ *                  "model": "11",
  *                  "os" : "ios",
  *                  "os_version": "10",
  *                  "app_version": "1.0"

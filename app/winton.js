@@ -13,7 +13,7 @@ const logFormat = printf(info => {
     try{
         if(info.message.substr(-1) == '\n') // 줄넘김 제거
             info.message = info.message.substring(0,info.message.length-1);
-        return `${date} ${info.level}: ${info.message}`;
+        return `${date} ${info.level}: ${decodeURI(info.message)}`;
     }catch{
         return `${date} ${info.level}: ${info.message}`;
     }

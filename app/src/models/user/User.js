@@ -39,8 +39,11 @@ class User{
         return await UserMapper.login(client.user_mobile)
         .then(async (data) => {
             return await crypto.makePswordHashed(client, data)
-            .then((data) =>{
-                return {success: true, data: data};
+            .then(async (data) =>{
+                client.refersh_token = data.token.refersh_token;
+                return await UserMapper.setDevice(client)
+                .then((success) => {return {success: success, data: data};});
+               
             });
         })
         .catch((err) =>{

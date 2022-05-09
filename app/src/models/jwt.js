@@ -100,7 +100,7 @@ class jwt{
                     const response = await UserMapper.getRefersh(user.user_no);
 
                     if(response.err) reject({success: false, status: 401, err : response.err});
-                    else if(response.device_id !== body.device_id) reject({success: false, status: 401, err : `기존 디바이스가 아님`});
+                    else if(response.unique_id !== body.unique_id) reject({success: false, status: 401, err : `기존 디바이스가 아님`});
                     else if(response.refersh_token !== body.refersh_token) reject({success: false, status: 401, err : `토큰이 다름`});
                     else {
                         if (user.exp - now < month){ // refreshToken 기간이 30일 이하 남으면 새로 발급

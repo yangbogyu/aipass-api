@@ -1,5 +1,6 @@
 "use strict";
 const User = require("../../models/user/User");
+const UserDoor = require("../../models/user/UserDoor");
 
 const logger = require("../../../winton");
 const cookieParser = require('cookie-parser');
@@ -55,6 +56,19 @@ const postProcess = {
         const url = {
             method: "POST",
             path: "/register",
+            status: response.status
+        };
+        delete response.status;
+        return res.status(url.status).json(response);
+    },
+
+    homeRegister: async(req, res) => {
+        const door = new UserDoor(req.body);
+        const response = await door.homeRegister();
+        
+        const url = {
+            method: "POST",
+            path: "/home-register",
             status: response.status
         };
         delete response.status;

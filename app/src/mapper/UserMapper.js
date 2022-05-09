@@ -1,6 +1,5 @@
 "use strict";
 
-const { data } = require("../../winton");
 const logger = require("../../winton");
 const db = require("../config/db");
 
@@ -23,6 +22,31 @@ class UserMapper{
             });
         });
     }
+    static async setDevice(userInfo){
+        return new Promise(async (resolve, reject) =>{
+            const query = `UPDATE user_device
+                    SET unique_id =?, push_token= ?, 
+                    os= ?, refersh_token= ?, device_data=?
+                    WHERE user_mobile =?;`;
+            const device = {
+                        unique_id: userInfo.unique_id,
+                        push_token: userInfo.push_token,
+                        model: userInfo.model,
+                        os : userInfo.os,
+                        os_version: userInfo.os_version,
+                        app_version: userInfo.app_version,
+                    }
+            const param = [userInfo.unique_id, userInfo.push_token,
+                    userInfo.os, userInfo.refersh_token,
+                    JSON.stringify(device), userInfo.user_mobile];
+            db.query(query, param,  async(err) =>{
+                if(err)reject(new Error(`${err}`));
+                else resolve({success: true});
+            });
+        });
+    }
+
+
 
     static async getUserInfo(user_no, user_mobile){
         return new Promise(async (resolve, reject) =>{
@@ -51,7 +75,7 @@ class UserMapper{
                         INSERT INTO user_device SET ?`
 
             const device = {
-                device_id: userInfo.device_id,
+                unique_id: userInfo.unique_id,
                 push_token: userInfo.push_token,
                 model: userInfo.model,
                 os : userInfo.os,
@@ -76,7 +100,7 @@ class UserMapper{
                 {
                     user_no: userInfo.user_no,
                     user_mobile: userInfo.user_mobile,
-                    device_id: userInfo.device_id,
+                    unique_id: userInfo.unique_id,
                     push_token: userInfo.push_token,
                     refersh_token: userInfo.token.refersh_token,
                     os: userInfo.os,
@@ -201,8 +225,8 @@ class UserMapper{
      */
      static async getRefersh(user_no){
         return new Promise((resolve, reject) =>{
-            const query = `SELECT device_id, refersh_token FROM user_device
-                WHERE user_no=?`;
+            const query = `SELECT unique_id, refersh_token FROM user_device
+                    WHERE user_no=?`;
             const param = user_no;
             db.query(query, param, (err, data) =>{
                 if(err) reject(`${err}`);
@@ -223,8 +247,8 @@ class UserMapper{
      static async setRefersh(user_no, refersh_token){
         return new Promise((resolve, reject) =>{
             const query = `UPDATE user_device
-                SET refersh_token=?, modi_date=NOW(), modi_no=?
-                WHERE user_no=?`;
+                    SET refersh_token=?, modi_date=NOW(), modi_no=?
+                    WHERE user_no=?`;
             const param = [refersh_token, user_no, user_no];
             db.query(query, param, (err) =>{
                 if(err) reject(`${err}`);
