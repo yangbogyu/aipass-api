@@ -5,7 +5,7 @@ const UserMapper = require("../../mapper/UserMapper");
 const crypto = require('../../public/js/user/crypto');
 const {jwt} = require('../jwt');
 const logger = require("../../../winton");
-const {checkSpecial, checkEngNum, checkSpace} = require('../../public/js/inputRegular');
+const {checkSpecial, checkNum, checkEng, checkSpace} = require('../../public/js/inputRegular');
 
 const checkName = (user_name) =>{
     //이름 체크
@@ -15,11 +15,10 @@ const checkName = (user_name) =>{
     return {success: true, status: 200};
 };
 const checkPsword = (user_psword) =>{
-   
-    if(checkSpace(user_psword) || checkEngNum(user_psword) ||
-    user_psword.length < 8 || user_psword.length > 20)
-        return {success: false, status: 400, err:`비밀번호는 영문과 숫자를 이용하여 8 ~ 20 자리로 생성바랍니다.`};
-    return {success: true, status: 200};
+    if(checkSpace(user_psword) || !checkNum(user_psword) || checkEng(user_psword) ||
+    user_psword.length < 6 || user_psword.length > 20)
+        return false;
+    return true;
 };
 
 
@@ -62,10 +61,10 @@ class User{
         if(client.err) return {success: false, err:client.err};
         return await UserMapper.getUserInfo(client.user_no, client.user_mobile)
         .then((data) => {
-            return {success: true,data:data};
+            return {success: true, status: 200, data:data};
         })
         .catch((err)=>{
-            return {success: false, err:err};
+            return {success: false, status: 401, err:err};
         });
     }
 
@@ -83,8 +82,9 @@ class User{
         const {use_yn} = await UserMapper.getUsers(client.user_mobile);
         if(use_yn)
             return {success : false, status: 400, err:`이미 회원가입을 했습니다.`};
-        if(client.user_psword.length < 8 || client.user_psword.length > 20)
-            return {success : false, status: 400, err:`비밀번호는 8~20자리로 입력해주세요`};
+        if(!checkPsword(client.user_psword)){
+            return {success : false, status: 400, err:`비밀번호는 6~20자리 이상 숫자로 입력바랍니다.`};
+        }
 
         //비밀번호 암호화
         const {user_psword, salt } = await crypto.createHashedPsword(client.user_psword);
@@ -133,12 +133,10 @@ class User{
         }
         //비밀번호 체크 및 암호화
         if(client.user_psword){
-            const response = checkPsword(client.user_psword);
-            if(response.success == false)
-                return response;
+            if(!checkPsword(client.user_psword)) return {success : false, status: 400, err:`비밀번호는 6~20자리 이상 숫자로 입력바랍니다.`};
             const {user_psword, salt } = await crypto.createHashedPsword(client.user_psword);
-            client.user_psword = user_psword;
-            client.salt = salt;
+                client.user_psword = user_psword;
+                client.salt = salt;
         }
 
         // 업데이트
@@ -184,6 +182,32 @@ class User{
         }
     }
 
+    /**
+     * 메인화면
+     */
+
+    async UserApt(){
+        const client = this.body;
+        return UserMapper.getUserApt(client.user_no)
+        .then((data) => {
+            return {success: true, status:200, data:data};
+        })
+        .catch((err) => {
+            return {success: false, status:400, err:err};
+        })
+    }
+
+    async UserScan(){
+        const client = this.body;
+        return UserMapper.getUserScan(client.user_no)
+        .then((data) => {
+            return {success: true, status:200, data:data};
+        })
+        .catch((err) => {
+            return {success: false, status:400, err:err};
+        })
+    }
+    
 }
 
 module.exports = User;

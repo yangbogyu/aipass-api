@@ -217,11 +217,59 @@ class UserMapper{
         });
     }
 
+    static async getUserApt(user_no){
+        return new Promise((resolve, reject) =>{
+            const query = `SELECT apc.apc_no,
+                        ufn_code('B011', apc.user_dv_cd) AS user_dv_cd,
+                        apc.apv_yn,
+                        ufn_get_name(apc.apt_no, 'apt') AS apt_name,
+                        ufn_get_name(apc.bldg_no, 'bldg') AS bldg_name,
+                        ufn_get_name(apc.home_no, 'home') AS home_name,
+                        apt.contract_type,
+                        apc.payment_yn,
+                        title_yn
+                        FROM user_application AS apc
+                        JOIN apt_base AS apt
+                            ON apc.apt_no = apt.apt_no
+                            AND apt.use_yn = 'Y'
+                        WHERE apc.del_yn = 'N'
+                        AND apc.user_no = ?
+                        ORDER BY apc.title_yn DESC,
+                            apc.reg_date;`;
+
+            db.query(query, user_no, (err, data) =>{
+                if(err) reject(new Error(`${err}`));
+                else resolve(data);
+            });
+        }).catch((err) => {
+            return {err:err};
+        });
+    }
+
+    static async getUserScan(user_no){
+        return new Promise((resolve, reject) =>{
+            const query = `SELECT 
+                            scan_yn,
+                            start_time,
+                            end_time,
+                            scan_date_yn,
+                            scan_date
+                        FROM user_scan
+                        WHERE user_no =?;`;
+
+            db.query(query, user_no, (err, data) =>{
+                if(err) reject(new Error(`${err}`));
+                else resolve(data[0]);
+            });
+        }).catch((err) => {
+            return {err:err};
+        });
+    }
 
     /**
      * Token 확인
-     * @param {String} userInfo{user_no, refersh_token} 
-     * @returns use_yn
+     * @param {JSON} userInfo{user_no, refersh_token} 
+     * @returns {String} use_yn
      */
      static async getRefersh(user_no){
         return new Promise((resolve, reject) =>{

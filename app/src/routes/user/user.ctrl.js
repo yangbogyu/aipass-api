@@ -8,9 +8,62 @@ const cookieParser = require('cookie-parser');
 const output = {
     login: async(req, res) => {
         const user = new User(req.data);
+        const response = await user.getUserInfo()
+        .then((response)=>{
+            return response;
+        })
+        .catch((err)=> {
+            return err
+        });
+
         const url = {
             method: "GET",
             path: "/login",
+            status: response.status,
+        };
+        delete response.status;
+        return res.status(url.status).json(response);
+    },
+    apt: async(req, res) => {
+        const user = new User(req.data);
+        
+        const response = await user.UserApt()
+        .then((response)=>{
+            return response;
+        })
+        .catch((err)=> {
+            return err;
+        });
+        const url = {
+            method: "GET",
+            path: "/apt-info",
+            status: response.status,
+        };
+        delete response.status;
+        return res.status(url.status).json(response);
+    },
+    scan: async(req, res) => {
+        const user = new User(req.data);
+        const response = await user.UserScan()
+        .then((response)=>{
+            return response;
+        })
+        .catch((err)=> {
+            return err;
+        });
+        const url = {
+            method: "GET",
+            path: "/scan-info",
+            status: response.status,
+        };
+        delete response.status;
+        return res.status(url.status).json(response);
+    },
+    advertise: async(req, res) => {
+        const user = new User(req.data);
+        const url = {
+            method: "GET",
+            path: "/advertise-info",
         };
         return await user.getUserInfo()
         .then((response)=>{
@@ -23,9 +76,7 @@ const output = {
             url.status = 401;
             return res.status(url.status).json(err);
         });
-        
     },
- 
 };
 
 const postProcess = {
