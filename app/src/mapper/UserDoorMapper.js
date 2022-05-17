@@ -77,7 +77,7 @@ class UserDoorMapper{
                         AND bldg_no = ?
                         AND home_no = ?;`;
                 const param = [data.user_no, data.apt_no, data.bldg_no, data.home_no];
-
+                logger.info(param);
                 db.query(query, param,  async(err, data) =>{
                     if(err)reject(new Error(`${err}`));
                     else resolve(data[0].COUNT);

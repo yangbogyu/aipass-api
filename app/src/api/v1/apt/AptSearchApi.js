@@ -5,7 +5,7 @@
  *
  * @apiVersion        1.0.0
  * @apiName           apt-arrer
- * @apiGroup          apts
+ * @apiGroup          apt
  *
  * @apiHeader {String} Authorization access_token
  * @apiHeaderExample {Header} Header-Example
@@ -18,7 +18,7 @@
  * @apiExample {curl} Example usage:
  *   curl  --header "Content-Type: application/json"
  *         --request GET
- *       https://bogyu.shop/apt/:apt_name
+ *       https://api.bogyu98.shop/apt/:apt_name
  *
  * 
  * @apiSuccess {boolean} success true
@@ -58,7 +58,7 @@
  *
  * @apiVersion        1.0.0
  * @apiName           apt-bldg-arrer
- * @apiGroup          apts
+ * @apiGroup          apt
  *
  * @apiHeader {String} Authorization access_token
  * @apiHeaderExample {Header} Header-Example
@@ -71,7 +71,7 @@
  * @apiExample {curl} Example usage:
  *   curl  --header "Content-Type: application/json"
  *         --request GET
- *       https://bogyu.shop/apt/bldg/:apt_no
+ *       https://api.bogyu98.shop/apt/bldg/:apt_no
  *
  * 
  * @apiSuccess {boolean} success true
@@ -106,7 +106,7 @@
  *
  * @apiVersion        1.0.0
  * @apiName           bldg-home-arrer
- * @apiGroup          apts
+ * @apiGroup          apt
  *
  * @apiHeader {String} Authorization access_token
  * @apiHeaderExample {Header} Header-Example
@@ -119,7 +119,7 @@
  * @apiExample {curl} Example usage:
  *   curl  --header "Content-Type: application/json"
  *         --request GET
- *       https://bogyu.shop/apt/home/:bldg_no
+ *       https://api.bogyu98.shop/apt/home/:bldg_no
  *
  * 
  * @apiSuccess {boolean} success true

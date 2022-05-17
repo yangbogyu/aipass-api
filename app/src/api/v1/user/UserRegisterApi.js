@@ -45,7 +45,7 @@
  *                  "os_version": "10",
  *                  "app_version": "1.0"
  *              }' 
- *           https://bogyu.shop/user/register
+ *           https://api.bogyu98.shop/user/register
  *
  *
  * @apiSuccess {boolean} success true
@@ -61,8 +61,8 @@
  *              "user_code": "String",
  *              "user_name": "String",
  *              "token": {
- *                  "accessToken": "token",
- *                  "refershToken": "token"
+ *                  "access_token": "token",
+ *                  "refersh_token": "token"
  *              }
  *          }
  *      }

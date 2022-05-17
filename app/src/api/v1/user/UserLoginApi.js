@@ -33,7 +33,7 @@
  *                  "os_version": "10",
  *                  "app_version": "1.0"
  *                  }' 
- *           https://bogyu.shop/user/login
+ *           https://api.bogyu98.shop/user/login
  *
  * @apiSuccess {boolean} success true
  * @apiSuccess {String[]} data 결과 데이터
@@ -48,8 +48,8 @@
  *              "user_code": "String",
  *              "user_name": "String",
  *              "token": {
- *                  "accessToken": "token",
- *                  "refershToken": "token"
+ *                  "access_token": "token",
+ *                  "refersh_token": "token"
  *              }
  *          }
  *      }
@@ -77,7 +77,7 @@
  * @apiExample {curl} Example usage:
  *   curl  --header "Content-Type: application/json"
  *         --request GET
- *       https://bogyu.shop/user/login
+ *       https://api.bogyu98.shop/user/login
  *
  * 
  * @apiSuccess {boolean} success true

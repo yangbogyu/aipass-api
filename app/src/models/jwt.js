@@ -6,6 +6,8 @@ const logger = require('../../winton');
 const {secretKey, accessOption, refershOption} = require('../config/secretKey');
 const {isEmpty} = require('../public/js/inputRegular');
 
+const createError = require('http-errors');
+
 const verifyAccessToken = (req, res, next) =>{
     const authHeader = req.headers["authorization"];
     const accessToken = authHeader && authHeader.split(" ")[1];
@@ -13,31 +15,27 @@ const verifyAccessToken = (req, res, next) =>{
         return res.status(401).json({success: false ,err: "accessToken이 없거나 형식이 잘못되었습니다."});
     }
     
-    jwtKen.verify(accessToken, process.env.SECRET_KEY, (error, user) => {
-        if (error){ 
-            if(error.name === 'TokenExpiredError')
-                return res.status(401).json({success: false, err: 'accessToken 만료.'});
-            else
-                return res.status(401).json({success: false, err: `${error}`});
+    jwtKen.verify(accessToken, process.env.SECRET_KEY, (err, user) => {
+        if (err){
+            next(createError(401,err));
+        } else {
+            req.data=user;
+            req.data.status=200;
+            next();
         }
-        req.data=user;
-        req.data.status=200;
-        next();
+        
     });
   };
 
 const accessTokenData = (req, res, next)=>{
     const authHeader = req.headers["authorization"];
     const accessToken = authHeader && authHeader.split(" ")[1];
-    jwtKen.verify(accessToken, process.env.SECRET_KEY, (error, user) => {
-        if(!error){
-            req.data = {
-                user_no: user.user_no,
-                user_mobile: user.user_mobile,
-                user_code: user.user_code,
-            };
+    jwtKen.verify(accessToken, process.env.SECRET_KEY, (err, user) => {
+        if(err && err.name !== 'TokenExpiredError'){
+            next(createError(401,err));
+        } else{
+            next();
         }
-        next();
         
     });
 }
@@ -55,6 +53,7 @@ class jwt{
     }
     //토큰 발행
     static async sign(user){
+        
         const accessData = {
             user_no: user.user_no,
             user_mobile: user.user_mobile,
@@ -66,43 +65,39 @@ class jwt{
         };
         const accessToken = jwtKen.sign(accessData, secretKey, accessOption);
         const refershToken = jwtKen.sign(refershData, secretKey, refershOption);
-        const update = await UserMapper.setRefersh(user.user_no, refershToken);
-        if(update.err){
-            return {err: `${err}`};
-        }
-        const token = {access_token:accessToken, refersh_token:refershToken};
-        return token;
+        return await UserMapper.setRefersh(user.user_no, refershToken)
+        .then(() => {
+            const token = {access_token:accessToken, refersh_token:refershToken};
+            return token;
+        })
+        .catch((err) => {
+            return err;
+        });
     }
 
 
     // access_token refresh_token 기반 재생성
     static async setAccessToken(req){
         const body = req.body;
-        const data = req.data;
-        if(!body.refersh_token) return {status: 401, err:"refreshToken이 없거나 형식이 잘못되었습니다."}
-        if(!data) return {status: 401, err:"accessToken이 없거나 형식이 잘못되었습니다."}
         const res =  new Promise(async (resolve, reject) =>{
             jwtKen.verify(
             body.refersh_token,
             process.env.SECRET_KEY,
-            async (error, user) =>{
-                if(error) {
-                    if(error.name === 'TokenExpiredError')
-                        reject({status: 401, err : `refreshToken 만료`});
-                    else
-                        reject({ status: 401, err: `${error}`});
+            async (err, user) =>{
+                if(err) {
+                    reject(createError(401,err));
                 } else{
                     const now = Math.floor(new Date().getTime() / 1000);
                     const month = 60*60*24*30;
-                    user.user_mobile = data.user_mobile;
-                    user.user_code = data.user_code;
 
                     const response = await UserMapper.getRefersh(user.user_no);
 
-                    if(response.err) reject({success: false, status: 401, err : response.err});
-                    else if(response.unique_id !== body.unique_id) reject({success: false, status: 401, err : `기존 디바이스가 아님`});
-                    else if(response.refersh_token !== body.refersh_token) reject({success: false, status: 401, err : `토큰이 다름`});
+                    if(response.err) reject(createError(response));
+                    else if(response.unique_id !== body.unique_id) reject(createError(403,new Error('unique_id 가 다릅니다.')));
+                    else if(response.refersh_token !== body.refersh_token) reject(createError(403,new Error('refersh_token 가 다릅니다.')));
                     else {
+                        user.user_code = response.user_code;
+                        user.user_mobile = response.user_mobile;
                         if (user.exp - now < month){ // refreshToken 기간이 30일 이하 남으면 새로 발급
                             const token = await this.sign(user);
                             resolve({success: true, status: 200, data: token});
@@ -115,7 +110,7 @@ class jwt{
             });
         })
         .catch((err) =>{
-            return {success: false, status: err.status, err:err.err};
+            return err;
         }); 
         
         return res;

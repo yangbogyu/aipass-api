@@ -24,13 +24,14 @@
  * @apiExample {curl} Example usage:
  *     curl  --header "Content-Type: application/json"
  *           --request POST 
- *           --data '{"user_no":"2022000045",
+ *           --data '{
+ *                  "user_no":"2022000045",
  *                  "user_mobile":"01012341234",
  *                  "user_psword": "12345678",
  *                  "gender_code": "01",
  *                  "user_name": "test"
  *              }' 
- *           https://bogyu.shop/user/update
+ *           https://api.bogyu98.shop/user/update
  *
  *
  * @apiSuccess {boolean} success true
@@ -43,11 +44,10 @@
  *        "data": {
  *              "user_no": "String",
  *              "user_mobile": "String",
- *              "user_code": "String",
  *              "user_name": "String",
  *              "token": {
- *                  "accessToken": "token",
- *                  "refershToken": "token"
+ *                  "access_token": "token",
+ *                  "refersh_token": "token"
  *              }
  *          }
  *      }

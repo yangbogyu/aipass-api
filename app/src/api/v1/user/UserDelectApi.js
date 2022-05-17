@@ -22,7 +22,7 @@
  *           --data '{"user_no":"2022000045",
  *                  "user_mobile":"01075293575"
  *              }' 
- *           https://bogyu.shop/user/delect
+ *           https://api.bogyu98.shop/user/delect
  *
  *
  * @apiSuccess {boolean} success true

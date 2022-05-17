@@ -24,15 +24,18 @@ const output = {
 };
 
 const postProcess = {
-    refresh: async(req, res) =>{
+    refresh: async(req, res, next) =>{
         const response = await jwt.setAccessToken(req);
-        const url = {
-            method: "POST",
-            path: "/refresh",
-            status: response.status,
-        };
-        delete response.status;
-        return res.status(url.status).json(response);
+        if(!response.success) next(response);
+        else {
+            const url = {
+                method: "POST",
+                path: "/refresh",
+                status: response.status,
+            };
+            delete response.status;
+            return res.status(url.status).json(response);
+        } 
     },
 };
 

@@ -23,7 +23,7 @@
  *           --data '{"refresh_token":"5f048fe"
  *                  "unique_id": "unique_id"
  *              }' 
- *           https://bogyu.shop/refresh
+ *           https://api.bogyu98.shop/refresh
  *
  *
  * @apiSuccess {boolean} success true
@@ -35,8 +35,8 @@
  *        "success": true,
  *        "data": {
  *              "token": {
- *                  "accessToken": "token",
- *                  "refershToken": "token"
+ *                  "access_token": "token",
+ *                  "refersh_token": "token"
  *              }
  *          }
  *      }

@@ -22,7 +22,7 @@ class Apt{
             return {success: true, status:200 , data:data};
         })
         .catch((err) => {
-            return {success: false, status:400 , err:`${err}`};
+            return err;
         });
     }
 
@@ -36,7 +36,7 @@ class Apt{
             return {success: true, status:200 , data:data};
         })
         .catch((err) => {
-            return {success: false, status:400 , err:`${err}`};
+            return err;
         });
     }
 
@@ -54,7 +54,7 @@ class Apt{
             return {success: true, status:200 , data:data};
         })
         .catch((err) => {
-            return {success: false, status:400 , err:`${err}`};
+            return err;
         });
     }
     

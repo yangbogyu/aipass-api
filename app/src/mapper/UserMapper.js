@@ -16,12 +16,13 @@ class UserMapper{
                         user_psword, salt, user_code
                         FROM user_base WHERE user_mobile =?;`;
             db.query(query, [user_mobile],  async(err, data) =>{
-                if(err)reject(new Error(`${err}`));
+                if(err)reject(err);
                 else if(data[0]) resolve(data[0]);
-                else reject(new Error('데이터 없음'));
+                else resolve({});
             });
         });
     }
+
     static async setDevice(userInfo){
         return new Promise(async (resolve, reject) =>{
             const query = `UPDATE user_device
@@ -40,7 +41,7 @@ class UserMapper{
                     userInfo.os, userInfo.refersh_token,
                     JSON.stringify(device), userInfo.user_mobile];
             db.query(query, param,  async(err) =>{
-                if(err)reject(new Error(`${err}`));
+                if(err)reject(err);
                 else resolve({success: true});
             });
         });
@@ -54,9 +55,9 @@ class UserMapper{
                         FROM user_base WHERE user_no =? AND user_mobile =?;`;
             const param = [user_no, user_mobile];
             db.query(query, param,  async(err, data) =>{
-                if(err)reject(new Error(`${err}`));
+                if(err)reject(err);
                 else if(data[0]) resolve(data[0]);
-                else reject(new Error(`데이터 없음`));
+                else reject({});
             });
         }).catch((err) => {
             return{err:`${err}`};
@@ -153,12 +154,10 @@ class UserMapper{
             const query = `SELECT use_yn FROM user_base
                         WHERE user_mobile =?;`;
             db.query(query, user_mobile, (err, data) =>{
-                if(err) reject(`${err}`);
+                if(err) reject(err);
                 else if(data[0]) resolve(data[0]);
                 else resolve({"use_yn" : null});
             });
-        }).catch((err) => {
-            return{err:`${err}`};
         });
     }
 
@@ -185,11 +184,9 @@ class UserMapper{
             logger.info("query ==> "+query);
             logger.info("param ==> "+param);
             db.query(query, param, (err) =>{
-                if(err) reject(`${err}`);
-                else resolve({success: true, status: 200});
+                if(err) reject(err);
+                else resolve(true);
             });
-        }).catch((err) => {
-            return{err:`${err}`};
         });
     }
 
@@ -209,11 +206,9 @@ class UserMapper{
                 userInfo.user_mobile,
                 userInfo.user_mobile];
             db.query(query, param, (err) =>{
-                if(err) reject(`${err}`);
-                else resolve({success: true, status: 200});
+                if(err) reject(err);
+                else resolve(true);
             });
-        }).catch((err) => {
-            return{err:`${err}`};
         });
     }
 
@@ -238,11 +233,9 @@ class UserMapper{
                             apc.reg_date;`;
 
             db.query(query, user_no, (err, data) =>{
-                if(err) reject(new Error(`${err}`));
+                if(err) reject(err);
                 else resolve(data);
             });
-        }).catch((err) => {
-            return {err:err};
         });
     }
 
@@ -253,16 +246,14 @@ class UserMapper{
                             start_time,
                             end_time,
                             scan_date_yn,
-                            scan_date
+                            JSON_UNQUOTE(JSON_EXTRACT(scan_date, '$.day')) AS scan_date
                         FROM user_scan
                         WHERE user_no =?;`;
 
             db.query(query, user_no, (err, data) =>{
-                if(err) reject(new Error(`${err}`));
-                else resolve(data[0]);
+                if(err) reject(err);
+                else resolve(data);
             });
-        }).catch((err) => {
-            return {err:err};
         });
     }
 
@@ -273,17 +264,21 @@ class UserMapper{
      */
      static async getRefersh(user_no){
         return new Promise((resolve, reject) =>{
-            const query = `SELECT unique_id, refersh_token FROM user_device
-                    WHERE user_no=?`;
+            const query = `SELECT unique_id,
+                    refersh_token, 
+                    base.user_code AS user_code, 
+                    base.user_mobile AS user_mobile
+                    FROM user_device AS dev
+                    JOIN user_base AS base
+                        ON dev.user_no = base.user_no
+                    WHERE dev.user_no=?`;
             const param = user_no;
             db.query(query, param, (err, data) =>{
-                if(err) reject(`${err}`);
+                if(err) reject({err});
                 else if(data[0]) {
                     resolve(data[0]);
-                } else resolve({err: 'refersh_token 없습니다.'});
+                } else resolve({});
             });
-        }).catch((err) => {
-            return{err:err};
         });
     }
 
@@ -299,11 +294,9 @@ class UserMapper{
                     WHERE user_no=?`;
             const param = [refersh_token, user_no, user_no];
             db.query(query, param, (err) =>{
-                if(err) reject(`${err}`);
+                if(err) reject(err);
                 else resolve({success: true});
             });
-        }).catch((err) => {
-            return{err:`${err}`};
         });
     }
 

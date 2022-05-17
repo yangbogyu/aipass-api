@@ -4,7 +4,7 @@
  * @apiDescription   사용자의 출입문 신청입니다.
  *
  * @apiVersion        1.0.0
- * @apiName           user-update
+ * @apiName           user-door
  * @apiGroup          user
  * 
  * @apiHeader {String} Authorization access_token
@@ -36,7 +36,7 @@
  *              "bldg_no": "String",
  *              "home_no": "String"
  *              }' 
- *           https://bogyu.shop/user/home-register
+ *           https://api.bogyu98.shop/user/home-register
  *
  *
  * @apiSuccess {boolean} success true
