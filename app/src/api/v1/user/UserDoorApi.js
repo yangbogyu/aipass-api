@@ -49,7 +49,6 @@
  *        "data": {
  *              "total_pay_yn": "String",
  *              "contract_type": "String",
- *              "apt_no": "String",
  *              "apc_no": "String"
  *          }
  *      }

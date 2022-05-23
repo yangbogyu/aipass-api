@@ -1,6 +1,7 @@
 "use strict";
 const User = require("../../models/user/User");
 const UserDoor = require("../../models/user/UserDoor");
+const UserPay = require("../../models/user/UserPay");
 
 const logger = require("../../../winton");
 const cookieParser = require('cookie-parser');
@@ -108,6 +109,21 @@ const postProcess = {
     homeRegister: async(req, res, next) => {
         const door = new UserDoor(req.body);
         const response = await door.homeRegister();
+        if(!response.success) next(response);
+        else{
+            const url = {
+                method: "POST",
+                path: "/home-register",
+                status: response.status
+            };
+            delete response.status;
+            return res.status(url.status).json(response);
+        }
+    },
+    billing: async(req, res, next) => {
+        const pay = new UserPay(req.body);
+        const response = await pay.billing();
+        return res.status(200).json(response);
         if(!response.success) next(response);
         else{
             const url = {

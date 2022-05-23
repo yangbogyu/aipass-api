@@ -32,6 +32,7 @@
  *                      "apt_name": "AI패스-수정테스트",
  *                      "bldg_name": "103동",
  *                      "home_name": "404호",
+ *                      "advertise_yn": "Y",
  *                      "contract_type": "110",
  *                      "payment_yn": "N",
  *                      "title_yn": "Y"

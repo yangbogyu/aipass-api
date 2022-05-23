@@ -6,7 +6,11 @@
  * @apiVersion        1.0.0
  * @apiName           user-register
  * @apiGroup          user
- *
+ * 
+ * @apiHeader {String} Authorization access_token
+ * @apiHeaderExample {Header} Header-Example
+ *     "Authorization: Bearer 5f048fe"
+ * 
  * @apiBody {String} user_mobile 전화번호
  * @apiBody {String} user_psword 비밀번호
  * @apiBody {String} user_code 권한 코드(B001)

@@ -67,7 +67,7 @@ class jwt{
         const refershToken = jwtKen.sign(refershData, secretKey, refershOption);
         return await UserMapper.setRefersh(user.user_no, refershToken)
         .then(() => {
-            const token = {access_token:accessToken, refersh_token:refershToken};
+            const token = {access_token:accessToken, refresh_token:refershToken};
             return token;
         })
         .catch((err) => {
@@ -81,7 +81,7 @@ class jwt{
         const body = req.body;
         const res =  new Promise(async (resolve, reject) =>{
             jwtKen.verify(
-            body.refersh_token,
+            body.refresh_token,
             process.env.SECRET_KEY,
             async (err, user) =>{
                 if(err) {
@@ -91,10 +91,9 @@ class jwt{
                     const month = 60*60*24*30;
 
                     const response = await UserMapper.getRefersh(user.user_no);
-
                     if(response.err) reject(createError(response));
                     else if(response.unique_id !== body.unique_id) reject(createError(403,new Error('unique_id 가 다릅니다.')));
-                    else if(response.refersh_token !== body.refersh_token) reject(createError(403,new Error('refersh_token 가 다릅니다.')));
+                    else if(response.refresh_token !== body.refresh_token) reject(createError(403,new Error('refresh_token 가 다릅니다.')));
                     else {
                         user.user_code = response.user_code;
                         user.user_mobile = response.user_mobile;
@@ -103,6 +102,7 @@ class jwt{
                             resolve({success: true, status: 200, data: token});
                         } else {
                             const token = await this.access(user);
+                            token.refresh_token = body.refresh_token;
                             resolve({success: true, status: 200, data: token});
                         }
                     }

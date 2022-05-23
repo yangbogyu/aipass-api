@@ -20,5 +20,7 @@ router.delete('/delete', verifyAccessToken,ctrl.deleteProcess.delete);
 
 router.post('/home-register', ctrl.postProcess.homeRegister);
 
+router.post('/billing', verifyAccessToken, ctrl.postProcess.billing);
+
 module.exports = router;
 

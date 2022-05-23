@@ -58,7 +58,7 @@ class User{
         .then(async (data) => {
             return await crypto.makePswordHashed(client, data)
             .then(async (data) =>{
-                client.refersh_token = data.token.refersh_token;
+                client.refresh_token = data.token.refresh_token;
                 return await UserMapper.setDevice(client)
                 .then((success) => {return {success: true, status:200, data: data};});
             })
@@ -93,7 +93,7 @@ class User{
      */
     async register(){
         const client = this.body;
-
+        
         //유효성 체크
         if(!client.user_mobile  || client.user_mobile.length !== 11)
             return createError(400, new Error('전화번호를 확인 부탁드립니다.'));

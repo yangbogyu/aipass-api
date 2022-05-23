@@ -28,19 +28,29 @@ class UserDoor{
                             switch (data.user_dv_cd){ //출입 구분 코드(B011)
                                 case '01': //세대주
                                     if(householder !== 0) return createError(400, new Error('승인받은 세대주가 있습니다.'));
-
-                                    return await UserDoorMapper.homeRegister(data)
-                                    .then((apt) => {
-                                        apt.apt_no = data.apt_no;
-                                        apt.apc_no = data.apc_no;
-                                        return {success: true, status:200, data:apt};
-                                    });
+                                    return await UserDoorMapper.AptContractType(data.apt_no)
+                                    .then(async (apt) => {
+                                        // 아파트 타입에 따른 광고정보
+                                        if(apt.contract_type == '120' || apt.contract_type == '130' || apt.contract_type == '140'){
+                                            data.advertise_yn ='N';
+                                        } else if(apt.contract_type == '150' || apt.contract_type == '160'){
+                                            if(apt.total_pay_yn == 'Y') data.advertise_yn ='N';
+                                            else data.advertise_yn ='Y';
+                                        } else {
+                                            data.advertise_yn ='Y';
+                                        }
+                                        return await UserDoorMapper.homeRegister(data)
+                                        .then(() => {
+                                            apt.apc_no = data.apc_no;
+                                            return {success: true, status:200, data:apt};
+                                        });
+                                    })
+                                    
 
                                 case '02': //세대원
                                     if(householder !== 1) return createError(400, new Error('세대주로 신청 바랍니다.'));
                                     return await UserDoorMapper.homeRegister(data)
                                     .then((apt) => {
-                                        apt.apt_no = data.apt_no;
                                         apt.apc_no = data.apc_no;
                                         return {success: true, status:200, data:apt};
                                     });
@@ -62,7 +72,6 @@ class UserDoor{
 
                     return await UserDoorMapper.homeRegister(data)
                         .then((apt) => {
-                            apt.apt_no = data.apt_no;
                             apt.apc_no = data.apc_no;
                             return {success: true, status:200, data:apt};
                         });
@@ -78,7 +87,6 @@ class UserDoor{
 
                     return await UserDoorMapper.homeRegister(data)
                         .then((apt) => {
-                            apt.apt_no = data.apt_no;
                             apt.apc_no = data.apc_no;
                             return {success: true, status:200, data:apt};
                         });

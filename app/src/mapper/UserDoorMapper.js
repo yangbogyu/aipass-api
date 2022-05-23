@@ -39,32 +39,24 @@ class UserDoorMapper{
      * @returns 아파트 결제 타입
      */
     static async homeRegister(data){
-        try{
-            return new Promise(async (resolve, reject) =>{
-                const query = `INSERT INTO user_application SET ?;
-                            SELECT total_pay_yn, contract_type
-                            FROM apt_base
-                            WHERE apt_no = ?
-                            AND use_yn = 'Y'`;
-                const param = {
-                    reg_no: data.user_no,
-                    modi_no: data.user_no,
-                };
-                //JSON 객체 param에 추가
-                for(const [key, value] of Object.entries(data)){ param[key] = value; }
-                
-                // 타이틀인지 확인
-                if(await this.checkApplication(data.user_no) === 0) param.title_yn = 'Y';
-                else param.title_yn = 'N';
+        return new Promise(async (resolve, reject) =>{
+            const query = `INSERT INTO user_application SET ?;`;
+            const param = {
+                reg_no: data.user_no,
+                modi_no: data.user_no,
+            };
+            //JSON 객체 param에 추가
+            for(const [key, value] of Object.entries(data)){ param[key] = value; }
+            
+            // 타이틀인지 확인
+            if(await this.checkApplication(data.user_no) === 0) param.title_yn = 'Y';
+            else param.title_yn = 'N';
 
-                db.query(query, [param, data.apt_no],  async(err, data) =>{
-                    if(err)reject(new Error(`${err}`));
-                    else resolve(data[1][0]);
-                });
+            db.query(query, param,  async(err, data) =>{
+                if(err)reject(new Error(err));
+                else resolve(true);
             });
-        } catch(err){
-            return {err:`${err}`}
-        }
+        });
     }
 
     static async duplicate(data){
@@ -121,6 +113,24 @@ class UserDoorMapper{
             });
         }).catch((err) => {
             return{err:`${err}`};
+        });
+    }
+
+    /**
+     * 기존 아파트 확인
+     * @param {String} apt_no 
+     * @returns {Int} count
+     */
+     static async AptContractType(apt_no){
+        return new Promise((resolve, reject) =>{
+            const query = `SELECT total_pay_yn, contract_type
+                    FROM apt_base
+                    WHERE apt_no = ?
+                    AND use_yn = 'Y'`;
+            db.query(query, apt_no, (err, data) =>{
+                if(err) reject(err);
+                else resolve(data[0]);
+            });
         });
     }
 }

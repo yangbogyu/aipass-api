@@ -27,7 +27,7 @@ class UserMapper{
         return new Promise(async (resolve, reject) =>{
             const query = `UPDATE user_device
                     SET unique_id =?, push_token= ?, 
-                    os= ?, refersh_token= ?, device_data=?
+                    os= ?, refresh_token= ?, device_data=?
                     WHERE user_mobile =?;`;
             const device = {
                         unique_id: userInfo.unique_id,
@@ -38,7 +38,7 @@ class UserMapper{
                         app_version: userInfo.app_version,
                     }
             const param = [userInfo.unique_id, userInfo.push_token,
-                    userInfo.os, userInfo.refersh_token,
+                    userInfo.os, userInfo.refresh_token,
                     JSON.stringify(device), userInfo.user_mobile];
             db.query(query, param,  async(err) =>{
                 if(err)reject(err);
@@ -103,7 +103,7 @@ class UserMapper{
                     user_mobile: userInfo.user_mobile,
                     unique_id: userInfo.unique_id,
                     push_token: userInfo.push_token,
-                    refersh_token: userInfo.token.refersh_token,
+                    refresh_token: userInfo.token.refresh_token,
                     os: userInfo.os,
                     device_data: JSON.stringify(device),
                     reg_no: userInfo.user_no,
@@ -118,7 +118,7 @@ class UserMapper{
                             user_code: userInfo.user_code,
                             token: {
                                 access_token: userInfo.token.access_token,
-                                refersh_token: userInfo.token.refersh_token
+                                refresh_token: userInfo.token.refresh_token
                             }
                         },
                     );
@@ -220,6 +220,7 @@ class UserMapper{
                         ufn_get_name(apc.apt_no, 'apt') AS apt_name,
                         ufn_get_name(apc.bldg_no, 'bldg') AS bldg_name,
                         ufn_get_name(apc.home_no, 'home') AS home_name,
+                        apc.advertise_yn,
                         apt.contract_type,
                         apc.payment_yn,
                         title_yn
@@ -259,13 +260,13 @@ class UserMapper{
 
     /**
      * Token 확인
-     * @param {JSON} userInfo{user_no, refersh_token} 
+     * @param {JSON} userInfo{user_no, refresh_token} 
      * @returns {String} use_yn
      */
      static async getRefersh(user_no){
         return new Promise((resolve, reject) =>{
             const query = `SELECT unique_id,
-                    refersh_token, 
+                    refresh_token, 
                     base.user_code AS user_code, 
                     base.user_mobile AS user_mobile
                     FROM user_device AS dev
@@ -284,15 +285,15 @@ class UserMapper{
 
     /**
      * Token 재발급
-     * @param {String, String} (user_no, refersh_token)
+     * @param {String, String} (user_no, refresh_token)
      * @returns 
      */
-     static async setRefersh(user_no, refersh_token){
+     static async setRefersh(user_no, refresh_token){
         return new Promise((resolve, reject) =>{
             const query = `UPDATE user_device
-                    SET refersh_token=?, modi_date=NOW(), modi_no=?
+                    SET refresh_token=?, modi_date=NOW(), modi_no=?
                     WHERE user_no=?`;
-            const param = [refersh_token, user_no, user_no];
+            const param = [refresh_token, user_no, user_no];
             db.query(query, param, (err) =>{
                 if(err) reject(err);
                 else resolve({success: true});
