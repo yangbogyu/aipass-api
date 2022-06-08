@@ -14,13 +14,13 @@ router.get('/advertise-info', verifyAccessToken, ctrl.output.advertise);
 router.post('/register', ctrl.postProcess.register);
 router.post('/login', ctrl.postProcess.login);
 
-router.put('/update',verifyAccessToken, ctrl.putProcess.update);
+router.post('/update',verifyAccessToken, ctrl.postProcess.update);
 
 router.delete('/delete', verifyAccessToken,ctrl.deleteProcess.delete);
 
 router.post('/home-register', ctrl.postProcess.homeRegister);
 
-router.post('/billing', verifyAccessToken, ctrl.postProcess.billing);
+router.get('/billing', ctrl.postProcess.billing);
 
 module.exports = router;
 

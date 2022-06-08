@@ -1,0 +1,33 @@
+html 
+  head 
+    title= title
+    script(src="https://cdn.iamport.kr/js/iamport.payment-1.1.8.js")
+    script(src="https://code.jquery.com/jquery-3.6.0.min.js")
+  body 
+    h1= message
+    button(onclick='requestPay();')='버튼'
+
+script(type='text/javascript').
+
+  function requestPay() {
+    var IMP = window.IMP; // 생략 가능
+    IMP.init('imp99824264'); // 예: imp00000000
+    const user_no = '2022000067';
+    const cust_uid = new Date().getTime().toString(36);
+    const apc_no = '2022000071';
+    const amount = 0;
+
+    var str = `user_no=${user_no}&customer_uid=${cust_uid}&pay_method=card&apc_no=${apc_no}&amount=${amount}`;
+    var url = `https://api.bogyu98.shop/user/billing?${str}`;
+    IMP.request_pay({ // param
+      pg: 'kcp_billing', 
+      pay_method: 'card',
+      merchant_uid: 'billing_' + new Date().getTime(), //첫 주문 영수번호
+      name: 'AiPass 정기 결제 등록',//결제창에서 보여질 이름
+      amount: 0, // 0으로 설정하여 빌링키만 발급
+      customer_uid: cust_uid, // customer_uid 가 있어야 빌링키 발급을 시도합니다.
+      buyer_name: '고객명',
+      buyer_tel: '010-1234-1234',
+      m_redirect_url: url,
+    });
+  }

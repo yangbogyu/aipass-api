@@ -197,13 +197,10 @@ class UserMapper{
      */
     static async delete(userInfo){
         return new Promise((resolve, reject) =>{
-            const query = `UPDATE user_base
-                        SET user_name = '삭제', user_psword = '',
-                        salt = '', modi_date = NOW(), modi_no =?,
-                        user_mobile =?, use_yn = 'N', del_yn = 'Y'
-                        WHERE user_mobile =?;`;
+            const query = `DELETE FROM user_base 
+                        WHERE user_no =?
+                        AND user_mobile =?;`;
             const param = [userInfo.user_no,
-                userInfo.user_mobile,
                 userInfo.user_mobile];
             db.query(query, param, (err) =>{
                 if(err) reject(err);

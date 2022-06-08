@@ -1,5 +1,5 @@
 /**
- * @api {put} /user/update 회원정보 수정
+ * @api {post} /user/update 회원정보 수정
  *
  * @apiDescription   사용자 정보를 수정합니다. [광고/푸시와 다른 정보 한번에 수정 불가능]
  *

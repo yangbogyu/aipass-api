@@ -121,24 +121,19 @@ const postProcess = {
         }
     },
     billing: async(req, res, next) => {
-        const pay = new UserPay(req.body);
+        const pay = new UserPay(req.query);
         const response = await pay.billing();
-        return res.status(200).json(response);
         if(!response.success) next(response);
         else{
             const url = {
-                method: "POST",
-                path: "/home-register",
+                method: "GET",
+                path: "/billing",
                 status: response.status
             };
             delete response.status;
             return res.status(url.status).json(response);
         }
     },
-
-};
-
-const putProcess = {
     update: async(req, res, next) => {
         req.body.data = req.data;
         const user = new User(req.body);
@@ -146,7 +141,7 @@ const putProcess = {
         if(!response.success) next(response);
         else{
             const url = {
-                method: "PUT",
+                method: "POST",
                 path: "/update",
                 status: response.status
             };
@@ -154,6 +149,7 @@ const putProcess = {
             return res.status(url.status).json(response);
         }
     },
+
 };
 
 const deleteProcess = {
@@ -179,7 +175,6 @@ const deleteProcess = {
 module.exports = {
     output,
     postProcess, 
-    putProcess,
     deleteProcess,
 
 };

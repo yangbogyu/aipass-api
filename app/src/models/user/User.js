@@ -134,7 +134,6 @@ class User{
      */
     async update(){
         const client = this.body;
-
         // 토큰 정보와 수정자 정보 일치하는지 확인
         if(client.user_no !== client.data.user_no) return createError(400, new Error('토큰정보와 수정하는 정보가 다릅니다.'));
         else delete client.data;

@@ -1,10 +1,10 @@
 /**
- * @api {delect} /user/delect 회원 탈퇴
+ * @api {delete} /user/delete 회원 탈퇴
  *
  * @apiDescription   사용자의 데이터를 제거합니다.
  *
  * @apiVersion        1.0.0
- * @apiName           user-delect
+ * @apiName           user-delete
  * @apiGroup          user
  * 
  * @apiHeader {String} Authorization access_token
@@ -14,7 +14,7 @@
  * @apiBody {String} user_no 고객번호
  * @apiBody {String} user_mobile 전화번호
  *
- * @apiSampleRequest  /user/delect
+ * @apiSampleRequest  /user/delete
  *
  * @apiExample {curl} Example usage:
  *     curl  --header "Content-Type: application/json"
@@ -22,7 +22,7 @@
  *           --data '{"user_no":"2022000045",
  *                  "user_mobile":"01075293575"
  *              }' 
- *           https://api.bogyu98.shop/user/delect
+ *           https://api.bogyu98.shop/user/delete
  *
  *
  * @apiSuccess {boolean} success true

@@ -23,11 +23,12 @@ class UserDoor{
                     if(isEmpty(data.bldg_no) || isEmpty(data.home_no)) return createError(400, new Error('데이터 오류.'));
 
                     return await UserDoorMapper.checkHome(data)
-                        .then(async (householder) => {
+                        .then(async (home) => {
+                            logger.info(`apc_no : ${home.apc_no}`);
                             if(await UserDoorMapper.duplicate(data) != 0) return createError(400, new Error('이미 신청하셨습니다.'));
                             switch (data.user_dv_cd){ //출입 구분 코드(B011)
                                 case '01': //세대주
-                                    if(householder !== 0) return createError(400, new Error('승인받은 세대주가 있습니다.'));
+                                    if(home) return createError(400, new Error('이미 신청한 세대주가 있습니다.'));
                                     return await UserDoorMapper.AptContractType(data.apt_no)
                                     .then(async (apt) => {
                                         // 아파트 타입에 따른 광고정보
@@ -40,19 +41,22 @@ class UserDoor{
                                             data.advertise_yn ='Y';
                                         }
                                         return await UserDoorMapper.homeRegister(data)
-                                        .then(() => {
-                                            apt.apc_no = data.apc_no;
-                                            return {success: true, status:200, data:apt};
+                                        .then(async() => {
+                                            const apt_type = await UserDoorMapper.AptContractType(data.apt_no);
+                                            apt_type.apc_no = data.apt_no;
+                                            return {success: true, status:200, data:apt_type};
                                         });
                                     })
                                     
 
                                 case '02': //세대원
-                                    if(householder !== 1) return createError(400, new Error('세대주로 신청 바랍니다.'));
+                                    if(!home) return createError(400, new Error('세대주로 신청 바랍니다.'));
+                                    data.householder_apc_no = home.apc_no;
                                     return await UserDoorMapper.homeRegister(data)
-                                    .then((apt) => {
-                                        apt.apc_no = data.apc_no;
-                                        return {success: true, status:200, data:apt};
+                                    .then(async () => {
+                                        const apt_type = await UserDoorMapper.AptContractType(data.apt_no);
+                                        apt_type.apc_no = data.apt_no;
+                                        return {success: true, status:200, data:apt_type};
                                     });
 
                                 default:

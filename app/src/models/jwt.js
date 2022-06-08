@@ -47,6 +47,7 @@ class jwt{
             user_mobile: user.user_mobile,
             user_code: user.user_code,
         };  
+        logger.info("access:" + JSON.stringify(accessData));
         const accessToken = jwtKen.sign(accessData, secretKey, accessOption);
         const token = {access_token:accessToken};
         return token;
@@ -63,6 +64,8 @@ class jwt{
         const refershData = {
             user_no: user.user_no
         };
+        logger.info("sign accessData:" + JSON.stringify(accessData));
+        logger.info("sign refershData:" + JSON.stringify(refershData));
         const accessToken = jwtKen.sign(accessData, secretKey, accessOption);
         const refershToken = jwtKen.sign(refershData, secretKey, refershOption);
         return await UserMapper.setRefersh(user.user_no, refershToken)

@@ -8,15 +8,14 @@ class UserDoorMapper{
     /**
      * 
      * @param {신청 정보} data 
-     * @returns {세대주승인인원, 중복신청 체크}
+     * @returns {세대주승인인원}
      */
     static async checkHome(data){
         try{
             return new Promise(async (resolve, reject) =>{
-                const query = `SELECT COUNT(*) AS COUNT
+                const query = `SELECT apc_no
                         FROM user_application
-                        WHERE apv_yn = 'Y'
-                        AND del_yn = 'N'
+                        WHERE del_yn = 'N'
                         AND apt_no = ?
                         AND bldg_no = ?
                         AND home_no = ?
@@ -25,7 +24,7 @@ class UserDoorMapper{
                 
                 db.query(query, param,  async(err, data) =>{
                     if(err)reject(new Error(`${err}`));
-                    else resolve(data[0].COUNT);
+                    else resolve(data[0]);
                 });
             });
         } catch(err){
@@ -117,7 +116,7 @@ class UserDoorMapper{
     }
 
     /**
-     * 기존 아파트 확인
+     * 아파트 계약타입 확인
      * @param {String} apt_no 
      * @returns {Int} count
      */
@@ -133,6 +132,23 @@ class UserDoorMapper{
             });
         });
     }
+
+    /** 
+     * 출입문 신청정보 확인
+     * @param {String} apc_no 
+     * @returns {Int} count
+     */
+         static async getApcData(apc_no){
+            return new Promise((resolve, reject) =>{
+                const query = `SELECT apc_no, user_no, apt_no, bldg_no, home_no
+                        FROM user_application
+                        WHERE apc_no = ?`;
+                db.query(query, apc_no, (err, data) =>{
+                    if(err) reject(err);
+                    else resolve(data[0]);
+                });
+            });
+        }
 }
 
 module.exports = UserDoorMapper;
