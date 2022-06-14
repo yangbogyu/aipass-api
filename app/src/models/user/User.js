@@ -204,7 +204,6 @@ class User{
         const client = this.body;
         return UserMapper.getUserApt(client.user_no)
         .then((data) => {
-            logger.info(JSON.stringify(data));
             return {success: true, status:200, data:data};
         })
         .catch((err) => {

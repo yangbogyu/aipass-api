@@ -16,15 +16,17 @@ class UserDoor{
         const data = this.body;
         try{
             data.apc_no = await UserDoorMapper.getApcNo();
-            if(isEmpty(data.apc_dv_cd) || isEmpty(data.user_dv_cd) || isEmpty(data.user_no)) return createError(400, new Error('데이터 오류.'));
+            if(isEmpty(data.apc_dv_cd) || isEmpty(data.user_dv_cd) || isEmpty(data.user_no)){ 
+                return createError(400, new Error('데이터 오류.'));
+            }
             
             switch (data.apc_dv_cd){ // 신청 구분 코드(B010)
                 case '01':// 호 출입
-                    if(isEmpty(data.bldg_no) || isEmpty(data.home_no)) return createError(400, new Error('데이터 오류.'));
-
+                    if(isEmpty(data.bldg_no) || isEmpty(data.home_no)) {
+                        return createError(400, new Error('데이터 오류.'));
+                    }
                     return await UserDoorMapper.checkHome(data)
                         .then(async (home) => {
-                            logger.info(`apc_no : ${home.apc_no}`);
                             if(await UserDoorMapper.duplicate(data) != 0) return createError(400, new Error('이미 신청하셨습니다.'));
                             switch (data.user_dv_cd){ //출입 구분 코드(B011)
                                 case '01': //세대주
@@ -75,9 +77,10 @@ class UserDoor{
                     if(await UserDoorMapper.duplicate(data) != 0) return createError(400, new Error('이미 신청하셨습니다.'));
 
                     return await UserDoorMapper.homeRegister(data)
-                        .then((apt) => {
-                            apt.apc_no = data.apc_no;
-                            return {success: true, status:200, data:apt};
+                        .then(async() => {
+                            const apt_type = await UserDoorMapper.AptContractType(data.apt_no);
+                            apt_type.apc_no = data.apc_no;
+                            return {success: true, status:200, data:apt_type};
                         });
                     
                 case '03':// 단지 출입
@@ -90,9 +93,10 @@ class UserDoor{
                     if(await UserDoorMapper.duplicate(data) != 0) return createError(400, new Error('이미 신청하셨습니다.'));
 
                     return await UserDoorMapper.homeRegister(data)
-                        .then((apt) => {
-                            apt.apc_no = data.apc_no;
-                            return {success: true, status:200, data:apt};
+                        .then(async() => {
+                            const apt_type = await UserDoorMapper.AptContractType(data.apt_no);
+                            apt_type.apc_no = data.apc_no;
+                            return {success: true, status:200, data:apt_type};
                         });
 
                 default:

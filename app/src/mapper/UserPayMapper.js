@@ -10,10 +10,14 @@ class UserPayMapper{
         return new Promise(async (resolve, reject) =>{
 
             const query = `INSERT INTO user_payment SET ?
-                        ON DUPLICATE KEY UPDATE ?;`;
+                        ON DUPLICATE KEY UPDATE ?;
+                        UPDATE user_application
+                        SET payment_yn='Y', advertise_yn='N', modi_date = NOW(), modi_no= ?
+                        WHERE apc_no= ? OR householder_apc_no= ?;`;
             payment.reg_no = payment.user_no;
-                        
-            db.query(query, [payment, payment],  async(err) =>{
+            payment.reg_date = new Date().toISOString();
+            const params = [payment,payment,payment.user_no, payment.apc_no, payment.apc_no];
+            db.query(query, params,  async(err) =>{
                 if(err)reject(new Error(err));
                 else resolve(true);
             });
@@ -83,8 +87,35 @@ class UserPayMapper{
             const params = [payInfo.user_no, payInfo.apc_no];
             db.query(query, params,  async(err, data) =>{
                 if(err) reject(err);
-                else resolve(data[0].customer_uid);
-                
+                else resolve(data[0]);
+            });
+        });
+    }
+
+    static async getAmount(apc_data){
+        return new Promise(async (resolve, reject) =>{
+            const query = `SELECT count(*) as count
+                        FROM user_application
+                        WHERE householder_apc_no = ?
+                        AND apv_yn = 'Y';
+                        SELECT apt_amount
+                        FROM apt_base
+                        WHERE apt_no =?;`;
+            db.query(query, [apc_data.apc_no, apc_data.apt_no],  async(err, data) =>{
+                if(err) reject(err);
+                else resolve({count: (data[0][0].count+1), apt_amount: data[1][0].apt_amount});
+            });
+        });
+    }
+
+    static async userInfo(customer_uid){
+        return new Promise(async (resolve, reject) =>{
+            const query = `SELECT user_no, user_name, user_mobile
+                        FROM user_base
+                        WHERE user_no =(SELECT user_no FROM user_payment WHERE customer_uid =?);`;
+            db.query(query, customer_uid,  async(err, data) =>{
+                if(err) reject(err);
+                else resolve(data[0]);
             });
         });
     }

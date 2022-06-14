@@ -12,12 +12,12 @@ script(type='text/javascript').
   function requestPay() {
     var IMP = window.IMP; // 생략 가능
     IMP.init('imp99824264'); // 예: imp00000000
-    const user_no = '2022000067';
-    const cust_uid = new Date().getTime().toString(36);
-    const apc_no = '2022000071';
+    const user_no = '2022000105';
+    const cust_uid = 'l482kjtz';
+    const apc_no = '2022000140';
     const amount = 0;
 
-    var str = `user_no=${user_no}&customer_uid=${cust_uid}&pay_method=card&apc_no=${apc_no}&amount=${amount}`;
+    var str = `user_no=${user_no}&customer_uid=${cust_uid}&pay_method=card&apc_no=${apc_no}`;
     var url = `https://api.bogyu98.shop/user/billing?${str}`;
     IMP.request_pay({ // param
       pg: 'kcp_billing', 

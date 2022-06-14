@@ -2,6 +2,7 @@
 
 const logger = require("../../winton");
 const db = require("../config/db");
+const createError = require('http-errors');
 
 class UserMapper{
 
@@ -18,7 +19,7 @@ class UserMapper{
             db.query(query, [user_mobile],  async(err, data) =>{
                 if(err)reject(err);
                 else if(data[0]) resolve(data[0]);
-                else resolve({});
+                else reject(createError(400, new Error('회원정보 없음')));
             });
         });
     }
@@ -218,7 +219,7 @@ class UserMapper{
                         ufn_get_name(apc.bldg_no, 'bldg') AS bldg_name,
                         ufn_get_name(apc.home_no, 'home') AS home_name,
                         apc.advertise_yn,
-                        apt.contract_type,
+                        apt.total_pay_yn,
                         apc.payment_yn,
                         title_yn
                         FROM user_application AS apc

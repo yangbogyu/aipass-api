@@ -50,7 +50,11 @@ class UserDoorMapper{
             // 타이틀인지 확인
             if(await this.checkApplication(data.user_no) === 0) param.title_yn = 'Y';
             else param.title_yn = 'N';
-
+            param.apv_yn  = 'Y';
+            param.use_yn  = 'Y';
+            param.use_yn  = 'Y';
+            param.apv_date = new Date().toISOString();
+            param.apv_no = 'test';
             db.query(query, param,  async(err, data) =>{
                 if(err)reject(new Error(err));
                 else resolve(true);

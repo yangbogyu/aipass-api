@@ -1,5 +1,5 @@
 /**
- * @api {put} /user/home-register 출입문 신청
+ * @api {post} /user/home-register 출입문 신청
  *
  * @apiDescription   사용자의 출입문 신청입니다.
  *

@@ -33,7 +33,7 @@
  *                      "bldg_name": "103동",
  *                      "home_name": "404호",
  *                      "advertise_yn": "Y",
- *                      "contract_type": "110",
+ *                      "total_pay_yn": "N",
  *                      "payment_yn": "N",
  *                      "title_yn": "Y"
  *                  }, ...

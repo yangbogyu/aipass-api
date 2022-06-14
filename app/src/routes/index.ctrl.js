@@ -22,17 +22,6 @@ const output = {
         delete data.status;
         return res.status(url.status).json(response);
     },
-    CustomerUid: async(req, res) =>{
-        const Pay = new pay();
-        const response = await Pay.getCustomerUid();
-        const url = {
-            method: "GET",
-            path: "/getCustomerUid",
-            status: response.status,
-        };
-        delete response.status;
-        return res.status(url.status).json(response);
-    }
 };
 
 const postProcess = {

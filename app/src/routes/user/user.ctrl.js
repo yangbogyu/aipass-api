@@ -68,6 +68,32 @@ const output = {
             return res.status(url.status).json(response);
         }
     },
+    billing: async(req, res, next) => {
+        const pay = new UserPay(req.query);
+        const response = await pay.billing();
+        if(!response.success) next(response);
+        else{
+            const url = {
+                method: "GET",
+                path: "/billing",
+                status: response.status
+            };
+            delete response.status;
+            return res.status(url.status).json(response);
+        }
+    },
+    CustomerUid: async(req, res) =>{
+        req.data.apc_no = req.params.apc_no;
+        const Pay = new UserPay(req.data);
+        const response = await Pay.getCustomerUid();
+        const url = {
+            method: "GET",
+            path: "/customer-uid/:apc_no",
+            status: response.status,
+        };
+        delete response.status;
+        return res.status(url.status).json(response);
+    }
 };
 
 const postProcess = {
@@ -120,20 +146,6 @@ const postProcess = {
             return res.status(url.status).json(response);
         }
     },
-    billing: async(req, res, next) => {
-        const pay = new UserPay(req.query);
-        const response = await pay.billing();
-        if(!response.success) next(response);
-        else{
-            const url = {
-                method: "GET",
-                path: "/billing",
-                status: response.status
-            };
-            delete response.status;
-            return res.status(url.status).json(response);
-        }
-    },
     update: async(req, res, next) => {
         req.body.data = req.data;
         const user = new User(req.body);
@@ -162,6 +174,21 @@ const deleteProcess = {
             const url = {
                 method: "DELETE",
                 path: "/delete",
+                status: response.status,
+            };
+            delete response.status;
+            return res.status(url.status).json(response);
+        }
+    },
+    billing: async(req, res, next) => {
+        req.body.data = req.data;
+        const pay = new UserPay(req.body);
+        const response = await pay.deletePay();
+        if(!response.success) next(response);
+        else{
+            const url = {
+                method: "DELETE",
+                path: "/billing",
                 status: response.status,
             };
             delete response.status;
