@@ -35,6 +35,7 @@
  *                      "advertise_yn": "Y",
  *                      "total_pay_yn": "N",
  *                      "payment_yn": "N",
+ *                      "apt_amount" : 1000,
  *                      "title_yn": "Y"
  *                  }, ...
  *              ]

@@ -215,8 +215,11 @@ class User{
         const client = this.body;
         return UserMapper.getUserScan(client.user_no)
         .then((data) => {
-            const send_date = data.scan_date.replace(/[\[\]]/g,'')
-            data.scan_date = send_date.split(', ');
+            logger.info(JSON.stringify(data));
+            if(data.scan_date_yn == 'Y'){
+                const send_date = data.scan_date.replace(/[\[\]]/g,'')
+                data.scan_date = send_date.split(', ');
+            }
             return {success: true, status:200, data:data};
         })
         .catch((err) => {

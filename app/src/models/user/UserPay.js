@@ -186,7 +186,29 @@ class UserPay{
 
     async deletePay(){
         const body = this.body;
-        
+        logger.info(JSON.stringify(body));
+        if(body.data.user_no != body.user_no) return createError(401, new Error('인증오류'));
+        if(body.customer_uid){
+            iamport.subscribe.unschedule({
+                customer_uid: body.customer_uid
+            })
+            .then(async ({response}) => {
+                if(!response) return;
+                for(const item of response){
+                    {
+                        logger.info(JSON.stringify(item));
+                        const data = {
+                            merchant_uid: item.merchant_uid,
+                            status: 'revoked'
+                        };
+                        await this.webhook(data);
+                    }
+                }
+            })
+        }
+        return await UserPayMapper.deletePay(body)
+        .then(()=>{return {success:true, status:200}})
+        .catch((err) => {return err});
     }
 }
 

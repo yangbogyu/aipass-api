@@ -108,6 +108,7 @@ class UserDoorMapper{
             const query = `SELECT count(*) AS COUNT
                         FROM user_application
                         WHERE user_no=?
+                        AND use_yn = 'Y'
                         AND del_yn = 'N'
                         AND title_yn = 'Y'`;
             db.query(query, user_no, (err, data) =>{
@@ -129,7 +130,8 @@ class UserDoorMapper{
             const query = `SELECT total_pay_yn, contract_type
                     FROM apt_base
                     WHERE apt_no = ?
-                    AND use_yn = 'Y'`;
+                    AND use_yn = 'Y'
+                    AND del_yn= 'N'`;
             db.query(query, apt_no, (err, data) =>{
                 if(err) reject(err);
                 else resolve(data[0]);
@@ -142,17 +144,34 @@ class UserDoorMapper{
      * @param {String} apc_no 
      * @returns {Int} count
      */
-         static async getApcData(apc_no){
-            return new Promise((resolve, reject) =>{
-                const query = `SELECT apc_no, user_no, apt_no, bldg_no, home_no
-                        FROM user_application
-                        WHERE apc_no = ?`;
-                db.query(query, apc_no, (err, data) =>{
-                    if(err) reject(err);
-                    else resolve(data[0]);
-                });
+    static async getApcData(apc_no){
+        return new Promise((resolve, reject) =>{
+            const query = `SELECT apc_no, user_no, apt_no, bldg_no, home_no
+                    FROM user_application
+                    WHERE apc_no = ?
+                    AND use_yn = 'Y' 
+                    AND del_yn= 'N'`;
+            db.query(query, apc_no, (err, data) =>{
+                if(err) reject(err);
+                else resolve(data[0]);
             });
-        }
+        });
+    }
+    
+    static async homeDelete(apc_data){
+        return new Promise((resolve, reject) =>{
+            const query = `UPDATE user_application SET title_yn = 'N', use_yn ='N',
+                    advertise_yn = 'N', del_yn = 'Y', del_date = NOW(), modi_date = NOW(),
+                    modi_no = ?, del_no = ?
+                    WHERE apc_no = ?
+                    OR householder_apc_no = ?`;
+            const params = [apc_data.user_no, apc_data.user_no, apc_data.apc_no, apc_data.apc_no]; 
+            db.query(query, apc_no, (err, data) =>{
+                if(err) reject(err);
+                else resolve(data[0]);
+            });
+        });
+    }
 }
 
 module.exports = UserDoorMapper;

@@ -74,7 +74,8 @@ class UserMapper{
     static async save(userInfo){
         return new Promise((resolve, reject) =>{
             const query = `INSERT INTO user_base SET ?;
-                        INSERT INTO user_device SET ?`
+                        INSERT INTO user_device SET ?;
+                        INSERT INTO user_scan SET ?;`;
 
             const device = {
                 unique_id: userInfo.unique_id,
@@ -109,6 +110,10 @@ class UserMapper{
                     device_data: JSON.stringify(device),
                     reg_no: userInfo.user_no,
                     modi_no: userInfo.user_no,
+                },
+                {
+                    user_no: userInfo.user_no,
+                    scan_date: null
                 }
             ];
             db.query(query, param, (err) =>{
@@ -221,6 +226,7 @@ class UserMapper{
                         apc.advertise_yn,
                         apt.total_pay_yn,
                         apc.payment_yn,
+                        apt.apt_amount,
                         title_yn
                         FROM user_application AS apc
                         JOIN apt_base AS apt
@@ -251,7 +257,7 @@ class UserMapper{
 
             db.query(query, user_no, (err, data) =>{
                 if(err) reject(err);
-                else resolve(data);
+                else resolve(data[0]);
             });
         });
     }

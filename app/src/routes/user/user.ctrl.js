@@ -180,6 +180,21 @@ const deleteProcess = {
             return res.status(url.status).json(response);
         }
     },
+    homeDelete: async(req, res, next) => {
+        req.body.data = req.data;
+        const door = new UserDoor(req.body);
+        const response = await door.homeDelete();
+        if(!response.success) next(response);
+        else{
+            const url = {
+                method: "DELETE",
+                path: "/billing",
+                status: response.status,
+            };
+            delete response.status;
+            return res.status(url.status).json(response);
+        }
+    },
     billing: async(req, res, next) => {
         req.body.data = req.data;
         const pay = new UserPay(req.body);

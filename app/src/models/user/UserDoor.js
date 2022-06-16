@@ -107,6 +107,11 @@ class UserDoor{
         }
         
     }
+    async homeDelete(){
+        const data = this.body;
+        return await UserDoorMapper.homeDelete(data);
+
+    }
     
 }
 

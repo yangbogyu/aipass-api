@@ -2,7 +2,6 @@
 
 const logger = require("../../winton");
 const db = require("../config/db");
-
 class UserPayMapper{
 
     static async setPayment(payment){
@@ -117,6 +116,41 @@ class UserPayMapper{
                 if(err) reject(err);
                 else resolve(data[0]);
             });
+        });
+    }
+
+    static async deletePay(payInfo){
+        return new Promise(async (resolve, reject) =>{
+            await db.beginTransaction();
+
+            const query = `UPDATE user_application
+                        SET advertise_yn = 'Y', payment_yn = 'N',
+                            modi_date = NOW(), modi_no = ?
+                        WHERE apc_no = ?
+                        OR householder_apc_no = ?;
+                        UPDATE user_payment 
+                        SET payment_stat = 'N', pay_method = NULL,
+                            expiration_date = NOW(), use_yn = 'N',
+                            del_yn = 'Y', del_date = NOW(), del_no = ?
+                        WHERE customer_uid = ?;
+                        UPDATE user_base
+                        SET payment_yn = 'N', payment = NULL, payment_state = NULL
+                        WHERE user_no = ?;`;
+            const user_application = [payInfo.user_no, payInfo.apc_no, payInfo.apc_no];
+            const user_payment = [payInfo.user_no, payInfo.customer_uid];
+            const user_base = [payInfo.user_no];
+            const params = user_application.concat(user_payment,user_base)
+            db.query(query, params,  async(err, data) =>{
+                if(err) {
+                    logger.info(JSON.stringify(err));
+                    db.rollback();
+                    reject(err);
+                } else {
+                    db.commit();
+                    resolve(true);
+                }
+            });
+            
         });
     }
 }

@@ -19,9 +19,11 @@ router.post('/update',verifyAccessToken, ctrl.postProcess.update);
 router.delete('/delete', verifyAccessToken,ctrl.deleteProcess.delete);
 
 router.post('/home-register', verifyAccessToken, ctrl.postProcess.homeRegister);
+router.delete('/home-delete', verifyAccessToken,ctrl.deleteProcess.homeDelete);
 
 router.get('/billing', ctrl.output.billing);
-router.delete('/billing', ctrl.deleteProcess.billing);
+router.delete('/billing', verifyAccessToken, ctrl.deleteProcess.billing);
+
 router.get('/customer-uid', verifyAccessToken, ctrl.output.CustomerUid);
 router.get('/customer-uid/:apc_no', verifyAccessToken, ctrl.output.CustomerUid);
 
