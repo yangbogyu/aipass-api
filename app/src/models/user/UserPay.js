@@ -115,9 +115,11 @@ class UserPay{
 
     async webhook(billing){
         const data = this.body? this.body : billing;
-
+        if(!billing.merchant_uid == false) data.merchant_uid = billing.merchant_uid;
         return await UserPayMapper.getPaymentLog(data.merchant_uid, 'scheduled')
         .then(async (apc_data) =>{
+            logger.info('apc_data'+JSON.stringify(apc_data));
+            logger.info('data'+JSON.stringify(data));
             if(apc_data.user_no) {
                 const payInfo = {
                     user_no: apc_data.user_no,
@@ -186,26 +188,30 @@ class UserPay{
 
     async deletePay(){
         const body = this.body;
-        logger.info(JSON.stringify(body));
         if(body.data.user_no != body.user_no) return createError(401, new Error('인증오류'));
-        if(body.customer_uid){
+        UserPayMapper.getCustomerUid(body)
+        .then((data)=>{
             iamport.subscribe.unschedule({
-                customer_uid: body.customer_uid
+                customer_uid: data.customer_uid
             })
-            .then(async ({response}) => {
+            .then(async (response) => {
                 if(!response) return;
                 for(const item of response){
                     {
-                        logger.info(JSON.stringify(item));
                         const data = {
+                            user_no: body.user_no,
                             merchant_uid: item.merchant_uid,
-                            status: 'revoked'
+                            pay_stat: 'revoked',
+                            reason: '결제등록 취소'
                         };
-                        await this.webhook(data);
+                        await UserPayMapper.PaymentLogUpdate(data);
                     }
                 }
-            })
-        }
+            }).catch();
+        })
+        .catch((err) => logger.error(JSON.stringify(err)))
+        
+            
         return await UserPayMapper.deletePay(body)
         .then(()=>{return {success:true, status:200}})
         .catch((err) => {return err});

@@ -166,9 +166,9 @@ class UserDoorMapper{
                     WHERE apc_no = ?
                     OR householder_apc_no = ?`;
             const params = [apc_data.user_no, apc_data.user_no, apc_data.apc_no, apc_data.apc_no]; 
-            db.query(query, apc_no, (err, data) =>{
+            db.query(query, params, (err) =>{
                 if(err) reject(err);
-                else resolve(data[0]);
+                else resolve(true);
             });
         });
     }

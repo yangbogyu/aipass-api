@@ -6,6 +6,7 @@ const UserDoorMapper = require("../../mapper/UserDoorMapper");
 const crypto = require('../../public/js/user/crypto');
 const logger = require("../../../winton");
 const {isEmpty} = require('../../public/js/inputRegular');
+const UserPay = require('./UserPay');
 
 class UserDoor{
     constructor(body){
@@ -109,7 +110,18 @@ class UserDoor{
     }
     async homeDelete(){
         const data = this.body;
-        return await UserDoorMapper.homeDelete(data);
+        logger.info(JSON.stringify(data));
+        if(data.data.user_no != data.user_no) return createError(401, new Error('인증오류'));
+        const pay = new UserPay(data);
+        return pay.deletePay()
+        .then(async() => {
+            logger.error(1)
+            return await UserDoorMapper.homeDelete(data).then(()=> {return{success: true, status:200}});
+        })
+        .catch((err)=> {
+            return err;
+        });
+        
 
     }
     

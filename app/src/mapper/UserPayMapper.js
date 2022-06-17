@@ -82,7 +82,8 @@ class UserPayMapper{
             const query = `SELECT customer_uid
                         FROM user_payment
                         WHERE user_no = ?
-                        AND apc_no = ?;`;
+                        AND apc_no = ?
+                        AND use_yn = 'Y' LIMIT 1;`;
             const params = [payInfo.user_no, payInfo.apc_no];
             db.query(query, params,  async(err, data) =>{
                 if(err) reject(err);
@@ -132,15 +133,15 @@ class UserPayMapper{
                         SET payment_stat = 'N', pay_method = NULL,
                             expiration_date = NOW(), use_yn = 'N',
                             del_yn = 'Y', del_date = NOW(), del_no = ?
-                        WHERE customer_uid = ?;
+                        WHERE apc_no = ?;
                         UPDATE user_base
                         SET payment_yn = 'N', payment = NULL, payment_state = NULL
                         WHERE user_no = ?;`;
             const user_application = [payInfo.user_no, payInfo.apc_no, payInfo.apc_no];
-            const user_payment = [payInfo.user_no, payInfo.customer_uid];
+            const user_payment = [payInfo.user_no, payInfo.apc_no];
             const user_base = [payInfo.user_no];
-            const params = user_application.concat(user_payment,user_base)
-            db.query(query, params,  async(err, data) =>{
+            const params = user_application.concat(user_payment,user_base);
+            db.query(query, params,  async(err) =>{
                 if(err) {
                     logger.info(JSON.stringify(err));
                     db.rollback();
